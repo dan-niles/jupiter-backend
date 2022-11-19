@@ -23,3 +23,23 @@ Group 10 members:
 - Mushraf M.I.M. (200404V)
 - Niles D.A. (200421U)
 - Rajeevan Y. (200501P)
+
+
+
+
+# Application Development Process
+
+## Setting Up
+
+After cloning the 
+
+1. app open the folder and run `npm install`.
+2. define a file named '.env' in the main folder and in that file you need to include following two key value pairs.
+    1. connection string of your internal database.
+    ```
+    MYSQL_CONNECTION_URI=mysql://username:password@localhost:3306/database_name
+    ```
+    2. port to run the server. (since react uses 3000 as the default port number i recommend to use any other port number)
+    ```
+    PORT=port_number
+    ```

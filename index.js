@@ -1,6 +1,30 @@
-const express = require("express");
-const app = express();
+import app from "./server.js"
 
-app.listen(3001, () => {
-	console.log("Server running on port 3001");
-});
+import UserDAO from "./DAO/UserDAO.js"
+
+import mysql from 'mysql2'
+import dotenv from 'dotenv'
+
+dotenv.config()
+
+const port = process.env.PORT || 8000
+
+let connection = mysql.createConnection(process.env.MYSQL_CONNECTION_URI)
+
+connection.connect(
+    err => {
+        if (err) {
+            return console.error(err)
+        }
+
+        console.log('Connected to the mysql server.')
+    }
+)
+
+UserDAO.injectDB(connection)
+
+UserDAO.addUser()
+
+
+
+app.listen(port, () => console.log(`listening on port ${port}`))
