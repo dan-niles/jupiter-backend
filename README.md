@@ -33,8 +33,12 @@ Group 10 members:
 
 After cloning the 
 
-1. app open the folder and run `npm install`.
-2. define a file named '.env' in the main folder and in that file you need to include following two key value pairs.
+1. open the folder and run `npm install`.
+2. Open mysql shell in the same folder jupiter-hrm-be (if using vscode use the below terminal) and type
+```
+mysql> SOURCE hr_system_schema.sql
+```
+3. define a file named '.env' in the main folder and in that file you need to include following two key value pairs.
     1. connection string of your internal database.
     ```
     MYSQL_CONNECTION_URI=mysql://username:password@localhost:3306/database_name
@@ -43,3 +47,5 @@ After cloning the
     ```
     PORT=port_number
     ```
+
+4. type `npm start` in the terminal and start the server.

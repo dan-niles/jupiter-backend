@@ -21,6 +21,9 @@ connection.connect(
     }
 )
 
+connection.execute('CREATE DATABASE IF NOT EXISTS hrm')
+
+
 UserDAO.injectDB(connection)
 
 UserDAO.addUser()

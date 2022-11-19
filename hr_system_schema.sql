@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS `hrm`;
+
+USE hrm;
+
 CREATE TABLE `status` (
   `status_id` INT,
   `type` VARCHAR(100),
