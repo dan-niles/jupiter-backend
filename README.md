@@ -14,6 +14,44 @@ Read more [here](project-description.pdf).
 
 The application uses MySQL for the database. The frontend is built using React and the backend is made using Node.js and Express.
 
+## Application Development Process
+
+### Setting Up
+
+After cloning the repository,
+
+1. Open the folder and run `npm install`.
+2. Open mysql shell in the same folder jupiter-hrm-be (if using vscode use the below terminal) and type
+
+```
+mysql> SOURCE hr_system_schema.sql
+```
+
+3. Define a file named '.env' in the main folder and in that file you need to include following key value pairs.
+
+   1. The hostname, username, password and port number to connect to your internal database
+
+   ```
+   MYSQL_HOST=your_host_name
+   MYSQL_USERNAME=your_username
+   MYSQL_PASSWORD=your_password
+   MYSQL_PORT=your_port_number
+   ```
+
+   2. Name of the databse
+
+   ```
+   DATABASE_NAME=db_name
+   ```
+
+   3. Port to run the server (Since React uses 3000 as the default port number I recommend to use any other port number)
+
+   ```
+   PORT=port_number
+   ```
+
+4. Type `npm start` in the terminal and start the server.
+
 ## Contribution
 
 Group 10 members:
@@ -23,38 +61,3 @@ Group 10 members:
 - Mushraf M.I.M. (200404V)
 - Niles D.A. (200421U)
 - Rajeevan Y. (200501P)
-
-# Application Development Process
-
-## Setting Up
-
-After cloning the
-
-1. open the folder and run `npm install`.
-2. Open mysql shell in the same folder jupiter-hrm-be (if using vscode use the below terminal) and type
-
-```
-mysql> SOURCE hr_system_schema.sql
-```
-
-3. define a file named '.env' in the main folder and in that file you need to include following three key value pairs.
-
-   1. connection string of your internal database.
-
-   ```
-   MYSQL_CONNECTION_URI=mysql://username:password@localhost:3306/database_name
-   ```
-
-   2. name of the databse
-
-   ```
-   DATABASE_NAME=db_name
-   ```
-
-   3. port to run the server. (since react uses 3000 as the default port number i recommend to use any other port number)
-
-   ```
-   PORT=port_number
-   ```
-
-4. type `npm start` in the terminal and start the server.

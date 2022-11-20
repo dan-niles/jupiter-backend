@@ -7,9 +7,16 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 3000;
+const db = process.env.DATABASE_NAME || "hrm";
 
-let connection = mysql.createConnection(process.env.MYSQL_CONNECTION_URI);
+var connection = mysql.createConnection({
+	host: process.env.MYSQL_HOST,
+	user: process.env.MYSQL_USERNAME,
+	password: process.env.MYSQL_PASSWORD,
+	database: db,
+	port: process.env.MYSQL_PORT,
+});
 
 connection.connect((err) => {
 	if (err) {
@@ -19,7 +26,6 @@ connection.connect((err) => {
 	console.log("Connected to the mysql server.");
 });
 
-const db = process.env.DATABASE_NAME || "hrm";
 connection.execute("CREATE DATABASE IF NOT EXISTS " + db);
 
 UserDAO.injectDB(connection);
