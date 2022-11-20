@@ -24,28 +24,37 @@ Group 10 members:
 - Niles D.A. (200421U)
 - Rajeevan Y. (200501P)
 
-
-
-
 # Application Development Process
 
 ## Setting Up
 
-After cloning the 
+After cloning the
 
 1. open the folder and run `npm install`.
 2. Open mysql shell in the same folder jupiter-hrm-be (if using vscode use the below terminal) and type
+
 ```
 mysql> SOURCE hr_system_schema.sql
 ```
-3. define a file named '.env' in the main folder and in that file you need to include following two key value pairs.
-    1. connection string of your internal database.
-    ```
-    MYSQL_CONNECTION_URI=mysql://username:password@localhost:3306/database_name
-    ```
-    2. port to run the server. (since react uses 3000 as the default port number i recommend to use any other port number)
-    ```
-    PORT=port_number
-    ```
+
+3. define a file named '.env' in the main folder and in that file you need to include following three key value pairs.
+
+   1. connection string of your internal database.
+
+   ```
+   MYSQL_CONNECTION_URI=mysql://username:password@localhost:3306/database_name
+   ```
+
+   2. name of the databse
+
+   ```
+   DATABASE_NAME=db_name
+   ```
+
+   3. port to run the server. (since react uses 3000 as the default port number i recommend to use any other port number)
+
+   ```
+   PORT=port_number
+   ```
 
 4. type `npm start` in the terminal and start the server.
