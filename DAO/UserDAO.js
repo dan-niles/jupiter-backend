@@ -1,17 +1,16 @@
 let connection;
 
 export default class UserDAO {
-    static async injectDB(conn) {
+	static async injectDB(conn) {
+		if (connection) {
+			return;
+		}
+		connection = conn;
+	}
 
-        if (connection) {
-            return
-        }
-        connection = conn
-    }
-
-    static async addUser() {
-        connection.query("INSERT INTO users (name, email) VALUES ('Handysof Inc.', 'handysof@outlook.com')")
-    }
-
-
+	static async addUser() {
+		connection.query(
+			"INSERT INTO employee (emp_id, full_name, email) VALUES ('00002', 'Test', 'test@test')"
+		);
+	}
 }
