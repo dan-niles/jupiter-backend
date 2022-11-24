@@ -1,13 +1,17 @@
 import mysql from "mysql2";
-import dbConfig from "./db.config.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const db = process.env.DATABASE_NAME || "hrm";
 
 // Create a connection to the database
 const connection = mysql.createConnection({
-	host: dbConfig.HOST,
-	user: dbConfig.USER,
-	password: dbConfig.PASSWORD,
-	database: dbConfig.DB,
-	port: dbConfig.PORT,
+	host: process.env.MYSQL_HOST,
+	user: process.env.MYSQL_USERNAME,
+	password: process.env.MYSQL_PASSWORD,
+	database: db,
+	port: process.env.MYSQL_PORT,
 });
 
 // Open the MySQL connection
