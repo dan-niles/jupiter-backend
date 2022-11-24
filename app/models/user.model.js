@@ -17,29 +17,32 @@ User.create = (newUser, result) => {
 			return;
 		}
 
-		console.log("created user: ", { id: res.insertId, ...newUser });
-		result(null, { id: res.insertId, ...newUser });
+		console.log("created user: ", { user_id: res.insertId, ...newUser });
+		result(null, { user_id: res.insertId, ...newUser });
 	});
 };
 
 // Find user by user_id
-User.findById = (id, result) => {
-	sql.query(`SELECT * FROM user WHERE user_id = ${id}`, (err, res) => {
-		if (err) {
-			console.log("Error: ", err);
-			result(err, null);
-			return;
-		}
+User.findById = (user_id, result) => {
+	connection.query(
+		`SELECT * FROM user WHERE user_id = ${user_id}`,
+		(err, res) => {
+			if (err) {
+				console.log("Error: ", err);
+				result(err, null);
+				return;
+			}
 
-		if (res.length) {
-			console.log("Found user: ", res[0]);
-			result(null, res[0]);
-			return;
-		}
+			if (res.length) {
+				console.log("Found user: ", res[0]);
+				result(null, res[0]);
+				return;
+			}
 
-		// not found user with the id
-		result({ kind: "not_found" }, null);
-	});
+			// not found user with the user_id
+			result({ kind: "not_found" }, null);
+		}
+	);
 };
 
 // Retrieve users from the database
@@ -63,10 +66,10 @@ User.getAll = (emp_id, result) => {
 };
 
 // Update user in the database
-User.updateById = (id, user, result) => {
-	sql.query(
-		"UPDATE user SET role = ? username = ?, password = ? WHERE user_id = ?",
-		[user.role, user.username, user.password, id],
+User.updateById = (user_id, user, result) => {
+	connection.query(
+		"UPDATE user SET role = ?, username = ?, password = ? WHERE user_id = ?",
+		[user.role, user.username, user.password, user_id],
 		(err, res) => {
 			if (err) {
 				console.log("Error: ", err);
@@ -75,35 +78,39 @@ User.updateById = (id, user, result) => {
 			}
 
 			if (res.affectedRows == 0) {
-				// not found user with the id
+				// not found user with the user_id
 				result({ kind: "not_found" }, null);
 				return;
 			}
 
-			console.log("Updated user: ", { id: id, ...user });
-			result(null, { id: id, ...user });
+			console.log("Updated user: ", { user_id: user_id, ...user });
+			result(null, { user_id: user_id, ...user });
 		}
 	);
 };
 
 // Delete user from the database
-User.remove = (id, result) => {
-	sql.query("DELETE FROM user WHERE user_id = ?", id, (err, res) => {
-		if (err) {
-			console.log("error: ", err);
-			result(null, err);
-			return;
-		}
+User.remove = (user_id, result) => {
+	connection.query(
+		"DELETE FROM user WHERE user_id = ?",
+		user_id,
+		(err, res) => {
+			if (err) {
+				console.log("error: ", err);
+				result(null, err);
+				return;
+			}
 
-		if (res.affectedRows == 0) {
-			// not found user with the id
-			result({ kind: "not_found" }, null);
-			return;
-		}
+			if (res.affectedRows == 0) {
+				// not found user with the user_id
+				result({ kind: "not_found" }, null);
+				return;
+			}
 
-		console.log("Deleted user with id: ", id);
-		result(null, res);
-	});
+			console.log("Deleted user with user_id: ", user_id);
+			result(null, res);
+		}
+	);
 };
 
 export default User;

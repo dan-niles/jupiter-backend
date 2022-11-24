@@ -11,13 +11,13 @@ const userRoutes = (app) => {
 	router.get("/", user.findAll);
 
 	// Retrieve a single user with id
-	// router.get("/:id", user.findOne);
+	router.get("/:user_id", user.findOne);
 
-	// // Update a user with id
-	// router.put("/:id", user.update);
+	// Update a user with id
+	router.put("/:user_id", user.update);
 
-	// // Delete a user with id
-	// router.delete("/:id", user.delete);
+	// Delete a user with id
+	router.delete("/:user_id", user.deleteRecord);
 
 	app.use("/api/user", router);
 };
