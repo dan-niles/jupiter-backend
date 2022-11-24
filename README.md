@@ -44,7 +44,7 @@ mysql> SOURCE hrm_schema.sql
    DATABASE_NAME=db_name
    ```
 
-   3. Port to run the server (Since React uses 3000 as the default port number I recommend to use any other port number)
+   3. Port to run the server (Use port **8080** or **3001** since the frontend runs on port **3000**)
 
    ```
    PORT=port_number
@@ -54,7 +54,7 @@ mysql> SOURCE hrm_schema.sql
 
 ## Contribution
 
-Group 10 members:
+Group members:
 
 - Kobinath A. (200308F)
 - Muaadh M.N.M. (200401J)
