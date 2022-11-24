@@ -30,6 +30,6 @@ connection.execute("CREATE DATABASE IF NOT EXISTS " + db);
 
 UserDAO.injectDB(connection);
 
-UserDAO.addUser();
+UserDAO.getEmployees();
 
 app.listen(port, () => console.log(`listening on port ${port}`));
