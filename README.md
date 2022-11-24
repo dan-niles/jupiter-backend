@@ -24,7 +24,7 @@ After cloning the repository,
 2. Open mysql shell in the same folder jupiter-hrm-be (if using vscode use the below terminal) and type
 
 ```
-mysql> SOURCE hr_system_schema.sql
+mysql> SOURCE hrm_schema.sql
 ```
 
 3. Define a file named '.env' in the main folder and in that file you need to include following key value pairs.
