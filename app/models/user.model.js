@@ -22,10 +22,27 @@ User.create = (newUser, result) => {
 	});
 };
 
+// Retrieve users from the database
+User.getAll = (result) => {
+	const query = "SELECT * FROM user";
+
+	connection.query(query, (err, res) => {
+		if (err) {
+			console.log("error: ", err);
+			result(null, err);
+			return;
+		}
+
+		console.log("users: ", res);
+		result(null, res);
+	});
+};
+
 // Find user by user_id
 User.findById = (user_id, result) => {
 	connection.query(
-		`SELECT * FROM user WHERE user_id = ${user_id}`,
+		"SELECT * FROM user WHERE user_id = ?",
+		[user_id],
 		(err, res) => {
 			if (err) {
 				console.log("Error: ", err);
@@ -39,30 +56,33 @@ User.findById = (user_id, result) => {
 				return;
 			}
 
-			// not found user with the user_id
+			// no user found
 			result({ kind: "not_found" }, null);
 		}
 	);
 };
 
-// Retrieve users from the database
-User.getAll = (emp_id, result) => {
-	let query = "SELECT * FROM user";
+// Find user by username and password
+User.findByCredentials = (username, password, result) => {
+	connection.query(
+		"SELECT * FROM user WHERE username = ? AND password = ?",
+		[username, password],
+		(err, res) => {
+			if (err) {
+				console.log("Error: ", err);
+				result(err, null);
+				return;
+			}
 
-	if (emp_id) {
-		query += ` WHERE emp_id LIKE '%${emp_id}%'`;
-	}
+			if (res.length) {
+				result(null, res[0]);
+				return;
+			}
 
-	connection.query(query, (err, res) => {
-		if (err) {
-			console.log("error: ", err);
-			result(null, err);
-			return;
+			// not found user with the user_id
+			result({ kind: "not_found" }, null);
 		}
-
-		console.log("users: ", res);
-		result(null, res);
-	});
+	);
 };
 
 // Update user in the database

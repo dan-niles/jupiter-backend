@@ -46,9 +46,7 @@ export const findOne = (req, res) => {
 
 // Retrieve all users from the database
 export const findAll = (req, res) => {
-	const emp_id = req.query.emp_id;
-
-	User.getAll(emp_id, (err, data) => {
+	User.getAll((err, data) => {
 		if (err)
 			res.status(500).send({
 				message: err.message || "Some error occurred while retrieving users",
