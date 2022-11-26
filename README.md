@@ -49,6 +49,17 @@ mysql> SOURCE hrm_schema.sql
    ```
    PORT=port_number
    ```
+   
+   4. JWT secret key for authentication
+   
+   ```
+   JWT_SECRET_KEY=jwt_secret_key
+   ```
+   
+   5. URL of frontend
+   ```
+   FRONTEND_URL=frontend_url
+   ```
 
 4. Type `npm start` in the terminal and start the server.
 
