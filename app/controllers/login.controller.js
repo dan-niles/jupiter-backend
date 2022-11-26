@@ -1,5 +1,9 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // Insert new user into the database
 export const authenticate = (req, res) => {
@@ -28,6 +32,11 @@ export const authenticate = (req, res) => {
 		} else {
 			// Compare password
 			if (bcrypt.compareSync(password, data.password)) {
+				const accessToken = jwt.sign(
+					{ username: username, user_id: data.user_id },
+					process.env.JWT_SECRET_KEY
+				);
+				data.token = accessToken;
 				res.send(data);
 			} else {
 				res.status(404).send({
