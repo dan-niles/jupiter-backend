@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 24, 2022 at 06:40 AM
+-- Generation Time: Nov 26, 2022 at 05:36 AM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.0
 
@@ -20,9 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `hrm`
 --
-
-CREATE DATABASE IF NOT EXISTS `hrm`;
-USE hrm;
 
 -- --------------------------------------------------------
 
@@ -360,7 +357,8 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `emp_id`, `role`, `username`, `password`) VALUES
-(1, '00001', 'admin', 'admin', 'eyfggugytdgf346798yfjtrwvgh');
+(1, '00001', 'admin', 'admin', '$2b$10$m/AKAaGV7Q6iG/UflAWfdegk/.HROYPAveo219Peh6BbkxMOyEJWu'),
+(2, '00002', 'manager', 'darren', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C');
 
 -- --------------------------------------------------------
 
@@ -575,7 +573,7 @@ ALTER TABLE `title`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
