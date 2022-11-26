@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import bcrypt from "bcrypt";
 
 // Insert new user into the database
 export const authenticate = (req, res) => {
@@ -12,7 +13,8 @@ export const authenticate = (req, res) => {
 	const username = req.body.username;
 	const password = req.body.password;
 
-	User.findByCredentials(username, password, (err, data) => {
+	// Retrieve user with same username from the database
+	User.findByCredentials(username, (err, data) => {
 		if (err) {
 			if (err.kind === "not_found") {
 				res.status(404).send({
@@ -23,6 +25,15 @@ export const authenticate = (req, res) => {
 					message: "Error! Please try again later.",
 				});
 			}
-		} else res.send(data);
+		} else {
+			// Compare password
+			if (bcrypt.compareSync(password, data.password)) {
+				res.send(data);
+			} else {
+				res.status(404).send({
+					message: `Invalid credentials!`,
+				});
+			}
+		}
 	});
 };

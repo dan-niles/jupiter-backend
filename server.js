@@ -11,7 +11,11 @@ var corsOptions = {
 	origin: "http://localhost:3000",
 };
 
-app.use(cors());
+app.use(
+	cors({
+		origin: "*",
+	})
+);
 
 // Parse requests of content-type - application/json
 app.use(express.json());

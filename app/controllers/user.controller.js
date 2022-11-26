@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import bcrypt from "bcrypt";
 
 // Insert new user into the database
 export const create = (req, res) => {
@@ -9,12 +10,15 @@ export const create = (req, res) => {
 		});
 	}
 
+	// Encrypt password before storing in database
+	const password_hash = bcrypt.hashSync(req.body.password, 10);
+
 	// Create a user object
 	const user = new User({
 		emp_id: req.body.emp_id,
 		role: req.body.role,
 		username: req.body.username,
-		password: req.body.password,
+		password: password_hash,
 	});
 
 	// Save user in the database

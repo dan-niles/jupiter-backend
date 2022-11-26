@@ -63,10 +63,10 @@ User.findById = (user_id, result) => {
 };
 
 // Find user by username and password
-User.findByCredentials = (username, password, result) => {
+User.findByCredentials = (username, result) => {
 	connection.query(
-		"SELECT * FROM user WHERE username = ? AND password = ?",
-		[username, password],
+		"SELECT * FROM user WHERE username = ?",
+		username,
 		(err, res) => {
 			if (err) {
 				console.log("Error: ", err);
