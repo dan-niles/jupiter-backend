@@ -65,7 +65,10 @@ User.findById = (user_id, result) => {
 // Find user by username and password
 User.findByCredentials = (username, result) => {
 	connection.query(
-		"SELECT * FROM user WHERE username = ?",
+		"SELECT * FROM user " +
+			"INNER JOIN employee ON employee.emp_id = user.emp_id " +
+			"INNER JOIN title ON employee.title_id = title.title_id " +
+			"WHERE username = ?",
 		username,
 		(err, res) => {
 			if (err) {
