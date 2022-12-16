@@ -346,7 +346,7 @@ INSERT INTO `title` (`title_id`, `job_title`) VALUES
 
 CREATE TABLE `user` (
   `user_id` int NOT NULL,
-  `emp_id` varchar(5) NOT NULL,
+  `emp_id` varchar(5) UNIQUE NOT NULL,
   `role` varchar(50) NOT NULL,
   `username` varchar(40) NOT NULL,
   `password` varchar(255) NOT NULL
