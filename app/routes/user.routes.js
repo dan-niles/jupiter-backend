@@ -2,25 +2,22 @@ import express from "express";
 import validateToken from "../middleware/auth.middleware.js";
 import * as user from "../controllers/user.controller.js";
 
-const userRoutes = (app) => {
-	const router = express.Router();
 
-	// Create a new user
-	router.post("/", validateToken, user.create);
+const router = express.Router();
 
-	// Retrieve all users
-	router.get("/", validateToken, user.findAll);
+// Create a new user
+router.post("/", validateToken, user.create);
 
-	// Retrieve a single user with id
-	router.get("/:user_id", validateToken, user.findOne);
+// Retrieve all users
+router.get("/", validateToken, user.findAll);
 
-	// Update a user with id
-	router.put("/:user_id", validateToken, user.update);
+// Retrieve a single user with id
+router.get("/:user_id", validateToken, user.findOne);
 
-	// Delete a user with id
-	router.delete("/:user_id", validateToken, user.deleteRecord);
+// Update a user with id
+router.put("/:user_id", validateToken, user.update);
 
-	app.use("/api/user", router);
-};
+// Delete a user with id
+router.delete("/:user_id", validateToken, user.deleteRecord);
 
-export default userRoutes;
+export default router;

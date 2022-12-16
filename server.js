@@ -31,8 +31,8 @@ app.get("/", (req, res) => {
 });
 
 // Initializaing routes
-userRoutes(app);
-loginRoutes(app);
+app.use(userRoutes);
+app.use(loginRoutes);
 
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}.`);
