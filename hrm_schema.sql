@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 26, 2022 at 05:36 AM
+-- Generation Time: Dec 16, 2022 at 12:07 PM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.0
 
@@ -65,21 +65,23 @@ INSERT INTO `contract` (`contract_id`, `type`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `custom_field`
+-- Table structure for table `custom_attribute`
 --
 
-CREATE TABLE `custom_field` (
-  `field_id` int NOT NULL,
-  `field_name` varchar(50) DEFAULT NULL
+CREATE TABLE `custom_attribute` (
+  `atttr_id` int NOT NULL,
+  `attr_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `alias` varchar(255) NOT NULL,
+  `data_type` enum('VARCHAR','INT','DATE') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data for table `custom_field`
+-- Dumping data for table `custom_attribute`
 --
 
-INSERT INTO `custom_field` (`field_id`, `field_name`) VALUES
-(2, 'Blood Group'),
-(1, 'Nationality');
+INSERT INTO `custom_attribute` (`atttr_id`, `attr_name`, `alias`, `data_type`) VALUES
+(1, 'nationality', 'Nationality', 'VARCHAR'),
+(2, 'blood_group', 'Blood Group', 'VARCHAR');
 
 -- --------------------------------------------------------
 
@@ -176,32 +178,22 @@ CREATE TABLE `employee` (
 --
 
 INSERT INTO `employee` (`emp_id`, `full_name`, `first_name`, `last_name`, `birthdate`, `marital_status`, `dept_id`, `email`, `nic`, `status_id`, `contract_id`, `title_id`, `supervisor_id`, `paygrade_id`) VALUES
-('00001', 'Baqir Habib', 'Baqir', 'Habib', '2000-11-16', 'single', 1, 'baqir@jupiter.com', '2000046782678', 1, 1, 5, NULL, 2),
+('00001', 'John Wick', 'John', 'Wick', '2000-11-16', 'single', 1, 'john@jupiter.com', '2000046782678', 1, 1, 5, NULL, 2),
 ('00002', 'Dave Windler', 'Dave', 'Windler', '1997-11-19', 'married', 1, 'dave@jupiter.com', '9700046782678', 1, 1, 1, NULL, 4),
 ('00003', 'Darren Bruen', 'Darren', 'Bruen', '1993-01-14', 'married', 2, 'darren@jupiter.com', '9600047882678', 1, 1, 6, '00002', 3),
-('00004', 'Kurt Corwin', 'Kurt', 'Corwin', '1989-08-08', 'single', 1, 'kurt@jupiter.com', '9300047884448', 1, 1, 4, '00002', 3);
+('00004', 'Kurt Corwin', 'Kurt', 'Corwin', '1989-08-08', 'single', 1, 'kurt@jupiter.com', '9300047884448', 1, 1, 7, '00002', 3);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `emp_custom_field`
+-- Table structure for table `emp_detail`
 --
 
-CREATE TABLE `emp_custom_field` (
-  `field_id` int NOT NULL,
-  `emp_id` varchar(5) NOT NULL,
-  `field_val` varchar(100) DEFAULT NULL
+CREATE TABLE `emp_detail` (
+  `emp_id` int NOT NULL,
+  `nationality` varchar(255) NOT NULL,
+  `blood_group` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `emp_custom_field`
---
-
-INSERT INTO `emp_custom_field` (`field_id`, `emp_id`, `field_val`) VALUES
-(1, '00001', 'Sri Lankan'),
-(1, '00002', 'Sri Lankan'),
-(2, '00001', 'A+'),
-(2, '00002', 'O+');
 
 -- --------------------------------------------------------
 
@@ -257,18 +249,23 @@ INSERT INTO `leave_balance` (`emp_id`, `year`, `annual`, `casual`, `maternity`, 
 --
 
 CREATE TABLE `org_info` (
-  `org_name` varchar(255) NOT NULL,
-  `head_office` int NOT NULL,
-  `reg_no` varchar(15) NOT NULL,
-  `logo_url` varchar(200) DEFAULT NULL
+  `id` int NOT NULL,
+  `info_field` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `alias` varchar(255) NOT NULL,
+  `value` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `org_info`
 --
 
-INSERT INTO `org_info` (`org_name`, `head_office`, `reg_no`, `logo_url`) VALUES
-('Jupiter Apparels', 1, 'JUP0876', NULL);
+INSERT INTO `org_info` (`id`, `info_field`, `alias`, `value`) VALUES
+(1, 'org_name', 'Organization Full Name', 'Jupiter Apparels PVT LTD'),
+(2, 'org_short_name', 'Organization Short Name', 'Jupiter'),
+(3, 'head_office', 'Head Office', 'Union Place'),
+(4, 'reg_no', 'Registration No', 'KEJ1765382'),
+(5, 'logo_url', 'Logo URL', 'public/assets/images/logo-text-blue.png'),
+(6, 'website', 'Company Website', 'https://www.jupiter.lk');
 
 -- --------------------------------------------------------
 
@@ -336,7 +333,8 @@ INSERT INTO `title` (`title_id`, `job_title`) VALUES
 (3, 'Chief Marketing Officer'),
 (4, 'ICT Manager'),
 (5, 'Software Engineer'),
-(6, 'Human Resources Manager');
+(6, 'Human Resources Manager'),
+(7, 'Network Engineer');
 
 -- --------------------------------------------------------
 
@@ -358,7 +356,8 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`user_id`, `emp_id`, `role`, `username`, `password`) VALUES
 (1, '00001', 'admin', 'admin', '$2b$10$m/AKAaGV7Q6iG/UflAWfdegk/.HROYPAveo219Peh6BbkxMOyEJWu'),
-(2, '00002', 'manager', 'darren', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C');
+(2, '00004', 'user', 'user', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C'),
+(3, '00003', 'manager', 'manager', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C');
 
 -- --------------------------------------------------------
 
@@ -398,11 +397,11 @@ ALTER TABLE `contract`
   ADD PRIMARY KEY (`contract_id`);
 
 --
--- Indexes for table `custom_field`
+-- Indexes for table `custom_attribute`
 --
-ALTER TABLE `custom_field`
-  ADD PRIMARY KEY (`field_id`),
-  ADD UNIQUE KEY `field_name` (`field_name`);
+ALTER TABLE `custom_attribute`
+  ADD PRIMARY KEY (`atttr_id`),
+  ADD UNIQUE KEY `field_name` (`attr_name`);
 
 --
 -- Indexes for table `department`
@@ -438,11 +437,10 @@ ALTER TABLE `employee`
   ADD KEY `paygrade_id` (`paygrade_id`);
 
 --
--- Indexes for table `emp_custom_field`
+-- Indexes for table `emp_detail`
 --
-ALTER TABLE `emp_custom_field`
-  ADD PRIMARY KEY (`field_id`,`emp_id`),
-  ADD KEY `emp_id` (`emp_id`);
+ALTER TABLE `emp_detail`
+  ADD PRIMARY KEY (`emp_id`);
 
 --
 -- Indexes for table `leave_application`
@@ -461,9 +459,8 @@ ALTER TABLE `leave_balance`
 -- Indexes for table `org_info`
 --
 ALTER TABLE `org_info`
-  ADD UNIQUE KEY `reg_no` (`reg_no`),
-  ADD UNIQUE KEY `logo_url` (`logo_url`),
-  ADD KEY `head_office` (`head_office`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `info_field` (`info_field`);
 
 --
 -- Indexes for table `paygrade`
@@ -516,10 +513,10 @@ ALTER TABLE `contract`
   MODIFY `contract_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `custom_field`
+-- AUTO_INCREMENT for table `custom_attribute`
 --
-ALTER TABLE `custom_field`
-  MODIFY `field_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+ALTER TABLE `custom_attribute`
+  MODIFY `atttr_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `department`
@@ -540,16 +537,16 @@ ALTER TABLE `emergency_contact`
   MODIFY `emergency_contact_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `emp_custom_field`
---
-ALTER TABLE `emp_custom_field`
-  MODIFY `field_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
 -- AUTO_INCREMENT for table `leave_application`
 --
 ALTER TABLE `leave_application`
   MODIFY `leave_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `org_info`
+--
+ALTER TABLE `org_info`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `paygrade`
@@ -567,13 +564,13 @@ ALTER TABLE `status`
 -- AUTO_INCREMENT for table `title`
 --
 ALTER TABLE `title`
-  MODIFY `title_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `title_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -609,13 +606,6 @@ ALTER TABLE `employee`
   ADD CONSTRAINT `employee_ibfk_6` FOREIGN KEY (`paygrade_id`) REFERENCES `paygrade` (`paygrade_id`);
 
 --
--- Constraints for table `emp_custom_field`
---
-ALTER TABLE `emp_custom_field`
-  ADD CONSTRAINT `emp_custom_field_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`),
-  ADD CONSTRAINT `emp_custom_field_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `custom_field` (`field_id`);
-
---
 -- Constraints for table `leave_application`
 --
 ALTER TABLE `leave_application`
@@ -626,12 +616,6 @@ ALTER TABLE `leave_application`
 --
 ALTER TABLE `leave_balance`
   ADD CONSTRAINT `leave_balance_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`);
-
---
--- Constraints for table `org_info`
---
-ALTER TABLE `org_info`
-  ADD CONSTRAINT `org_info_ibfk_1` FOREIGN KEY (`head_office`) REFERENCES `branch` (`branch_id`);
 
 --
 -- Constraints for table `user`
