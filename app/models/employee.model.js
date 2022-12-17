@@ -1,136 +1,175 @@
-import connection from "../config/db.js";
 
-// Constructor for Employee object
-const Employee = function (employee) {
-	this.emp_id = employee.emp_id;
-	this.role = employee.role;
-	this.username = employee.username;
-	this.password = employee.password;
-};
+import connection from "../config/db.js"
 
-// Insert new employee into the database
-Employee.create = (newUser, result) => {
-	connection.query("INSERT INTO employee SET ?", newUser, (err, res) => {
-		if (err) {
-			console.log("error: ", err);
-			result(err, null);
-			return;
-		}
 
-		console.log("created employee: ", { user_id: res.insertId, ...newUser });
-		result(null, { user_id: res.insertId, ...newUser });
-	});
-};
+class Employee {
+	constructor(
+		emp_id,
+		full_name,
+		first_name,
+		last_name,
+		birthdate,
+		marital_status,
+		dept_id,
+		email,
+		nic,
+		status_id,
+		contract_id,
+		title_id,
+		supervisor_id,
+		paygrade_id
+	) {
+		this.emp_id = emp_id
+		this.full_name = full_name
+		this.first_name = first_name
+		this.last_name = last_name
+		this.birthdate = birthdate
+		this.marital_status = marital_status
+		this.dept_id = dept_id
+		this.email = email
+		this.nic = nic
+		this.status_id = status_id
+		this.contract_id = contract_id
+		this.title_id = title_id
+		this.supervisor_id = supervisor_id
+		this.paygrade_id = paygrade_id
+	}
 
-// Retrieve employees from the database
-Employee.getAll = (result) => {
-	const query = "SELECT * FROM employee";
+	static getAll(result) {
+		connection.query(
+			`SELECT * FROM employee`,
+			(err, res) => {
+				if (err) {
+					result(null, res)
+					return
+				}
 
-	connection.query(query, (err, res) => {
-		if (err) {
-			console.log("error: ", err);
-			result(null, err);
-			return;
-		}
-
-		console.log("employees: ", res);
-		result(null, res);
-	});
-};
-
-// Find employee by user_id
-Employee.findById = (user_id, result) => {
-	connection.query(
-		"SELECT * FROM employee WHERE user_id = ?",
-		[user_id],
-		(err, res) => {
-			if (err) {
-				console.log("Error: ", err);
-				result(err, null);
-				return;
+				result(null, res)
 			}
+		)
+	}
 
-			if (res.length) {
-				console.log("Found employee: ", res[0]);
-				result(null, res[0]);
-				return;
+	static getById(emp_id, result) {
+		connection.query(
+			`SELECT * FROM employee WHERE emp_id = ?`,
+			[emp_id],
+			(err, res) => {
+				if (err) {
+					return result(null, res)
+				}
+
+				result(null, res)
 			}
+		)
+	}
 
-			// no employee found
-			result({ kind: "not_found" }, null);
-		}
-	);
-};
+	create(result) {
+		connection.query(
+			`INSERT INTO employee
+			(
+				emp_id,
+				full_name,
+				first_name,
+				last_name,
+				birthdate,
+				marital_status,
+				dept_id,
+				email,
+				nic,
+				status_id,
+				contract_id,
+				title_id,
+				supervisor_id,
+				paygrade_id
+			)
+			VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			[
+				this.emp_id,
+				this.full_name,
+				this.first_name,
+				this.last_name,
+				this.birthdate,
+				this.marital_status,
+				this.dept_id,
+				this.email,
+				this.nic,
+				this.status_id,
+				this.contract_id,
+				this.title_id,
+				this.supervisor_id,
+				this.paygrade_id
+			],
+			(err, res) => {
+				if (err) {
+					return result(null, err)
+				}
 
-// Find employee by username and password
-Employee.findByCredentials = (username, result) => {
-	connection.query(
-		"SELECT * FROM employee WHERE username = ?",
-		username,
-		(err, res) => {
-			if (err) {
-				console.log("Error: ", err);
-				result(err, null);
-				return;
+				result(null, res)
 			}
+		)
+	}
 
-			if (res.length) {
-				result(null, res[0]);
-				return;
+	edit(result) {
+		connection.query(
+			`UPDATE employee SET
+				full_name = ?,
+				first_name = ?,
+				last_name = ?,
+				birthdate = ?,
+				marital_status = ?,
+				dept_id = ?,
+				email = ?,
+				nic = ?,
+				status_id = ?,
+				contract_id = ?,
+				title_id = ?,
+				supervisor_id = ?,
+				paygrade_id = ?,
+			WHERE
+				emp_id = ?
+			`,
+			[
+				this.full_name,
+				this.first_name,
+				this.last_name,
+				this.birthdate,
+				this.marital_status,
+				this.dept_id,
+				this.email,
+				this.nic,
+				this.status_id,
+				this.contract_id,
+				this.title_id,
+				this.supervisor_id,
+				this.paygrade_id,
+				this.emp_id
+			],
+			(err, res) => {
+				if (err) {
+					return result(err, null)
+				}
+				return result(null, res)
 			}
+		)
+	}
 
-			// not found employee with the user_id
-			result({ kind: "not_found" }, null);
-		}
-	);
-};
+	static remove(emp_id, result) {
+		connection.query(
+			`DELETE FROM employee WHERE emp_id = ?`,
+			[emp_id],
+			(err, res) => {
+				if (err) {
+					return result(null, err)
+				}
 
-// Update employee in the database
-Employee.updateById = (user_id, employee, result) => {
-	connection.query(
-		"UPDATE employee SET role = ?, username = ?, password = ? WHERE user_id = ?",
-		[employee.role, employee.username, employee.password, user_id],
-		(err, res) => {
-			if (err) {
-				console.log("Error: ", err);
-				result(null, err);
-				return;
+				if (res.affectedRows === 0) {
+					return result({ error: `user with id ${emp_id} not found.` })
+				}
+
+				result(null, res)
 			}
+		)
+	}
+}
 
-			if (res.affectedRows == 0) {
-				// not found employee with the user_id
-				result({ kind: "not_found" }, null);
-				return;
-			}
-
-			console.log("Updated employee: ", { user_id: user_id, ...employee });
-			result(null, { user_id: user_id, ...employee });
-		}
-	);
-};
-
-// Delete employee from the database
-Employee.remove = (user_id, result) => {
-	connection.query(
-		"DELETE FROM employee WHERE user_id = ?",
-		user_id,
-		(err, res) => {
-			if (err) {
-				console.log("error: ", err);
-				result(null, err);
-				return;
-			}
-
-			if (res.affectedRows == 0) {
-				// not found employee with the user_id
-				result({ kind: "not_found" }, null);
-				return;
-			}
-
-			console.log("Deleted employee with user_id: ", user_id);
-			result(null, res);
-		}
-	);
-};
-
-export default Employee;
+export default Employee
