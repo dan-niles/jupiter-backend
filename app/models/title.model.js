@@ -1,15 +1,15 @@
-import connection from '../config/db.js' 
+import connection from "../config/db";
 
-class status {
-    constructor(status_id,type) {
-        this.status_id = status_id;
-        this.type = type;
+class title{
+    constructor(title_id, job_title){
+        this.title_id = title_id;
+        this.job_title = job_title;
     }
 
-    create(result) {
+    create(result){
         connection.query(
-            `INSERT INTO status(type)
-                VALUES (${this.type})`,
+            `INSERT INTO title(job_title)
+                VALUES (${this.job_title})`,
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
@@ -17,16 +17,16 @@ class status {
                     return result(err, null);
                 }
 
-                this.status_id = res.insertId
+                this.title_id = res.insertId
                 result(null, { ...this })
             }
         )
     }
 
 
-    static getAll(result) {
+    static getAll(result){
         connection.query(
-            `SELECT * FROM status`,
+            `SELECT * FROM title`,
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
@@ -39,9 +39,9 @@ class status {
     }
 
 
-    static getById(status_id, result) {
+    static getById(title_id, result){
         connection.query(
-            `SELECT * FROM status WHERE status_id = ${status_id}`,
+            `SELECT * FROM title WHERE title_id = ${title_id}`,
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
@@ -52,14 +52,14 @@ class status {
         )   
     }
 
-    updateById(result) {
+    updateById(result){
         connection.query(
-            `UPDATE status SET 
-            type = ${this.type} 
-            WHERE status_id = ${this.status_id}`,
+            `UPDATE title SET 
+            job_title = ${this.job_title} 
+            WHERE title_id = ${this.title_id}`,
             (err, res) => {
                 if (err) {
-                    console.log("error: ", err)
+                    console.log("error: ", err);
                     return result(err, null)
                 }
                 return result(null, res)
@@ -67,12 +67,12 @@ class status {
         )
     }
 
-    static removeById(status_id, result) {
+    static deleteById(title_id, result){
         connection.query(
-            `DELETE FROM status WHERE status_id = ${status_id}`,
+            `DELETE FROM title WHERE title_id = ${title_id}`,
             (err, res) => {
                 if (err) {
-                    console.log("error: ", err)
+                    console.log("error: ", err);
                     return result(err, null)
                 }
                 return result(null, res)
@@ -82,4 +82,4 @@ class status {
 
 }
 
-module.exports = status
+export default title;
