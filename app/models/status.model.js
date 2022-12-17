@@ -1,6 +1,6 @@
 import connection from '../config/db.js' 
 
-class status {
+class Status {
     constructor(status_id,type) {
         this.status_id = status_id;
         this.type = type;

@@ -1,15 +1,19 @@
 import connection from "../config/db";
 
-class Title{
-    constructor(title_id, job_title){
-        this.title_id = title_id;
-        this.job_title = job_title;
+class Paygrade{
+    constructor(paygrade_id, level, annual, casual, maternity, no_pay){
+        this.paygrade_id = paygrade_id;
+        this.level = level;
+        this.annual = annual;
+        this.casual = casual;
+        this.maternity = maternity;
+        this.no_pay = no_pay;
     }
 
     create(result){
         connection.query(
-            `INSERT INTO title(job_title)
-                VALUES (${this.job_title})`,
+            `INSERT INTO paygrade(level, annual, casual, maternity, no_pay)
+                VALUES (${this.level}, ${this.annual}, ${this.casual}, ${this.maternity}, ${this.no_pay})`,
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
@@ -17,7 +21,7 @@ class Title{
                     return result(err, null);
                 }
 
-                this.title_id = res.insertId
+                this.paygrade_id = res.insertId
                 result(null, { ...this })
             }
         )
@@ -26,7 +30,7 @@ class Title{
 
     static getAll(result){
         connection.query(
-            `SELECT * FROM title`,
+            `SELECT * FROM paygrade`,
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
@@ -39,9 +43,9 @@ class Title{
     }
 
 
-    static getById(title_id, result){
+    static getById(paygrade_id, result){
         connection.query(
-            `SELECT * FROM title WHERE title_id = ${title_id}`,
+            `SELECT * FROM paygrade WHERE paygrade_id = ${paygrade_id}`,
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
@@ -54,9 +58,13 @@ class Title{
 
     updateById(result){
         connection.query(
-            `UPDATE title SET 
-            job_title = ${this.job_title} 
-            WHERE title_id = ${this.title_id}`,
+            `UPDATE paygrade SET 
+            level = ${this.level}, 
+            annual = ${this.annual}, 
+            casual = ${this.casual}, 
+            maternity = ${this.maternity}, 
+            no_pay = ${this.no_pay} 
+            WHERE paygrade_id = ${this.paygrade_id}`,
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
@@ -67,9 +75,9 @@ class Title{
         )
     }
 
-    static deleteById(title_id, result){
+    static deleteById(paygrade_id, result){
         connection.query(
-            `DELETE FROM title WHERE title_id = ${title_id}`,
+            `DELETE FROM paygrade WHERE paygrade_id = ${paygrade_id}`,
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
@@ -82,4 +90,4 @@ class Title{
 
 }
 
-export default title;
+export default Paygrade;
