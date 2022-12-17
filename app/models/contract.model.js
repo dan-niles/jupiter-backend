@@ -11,18 +11,18 @@ class Contract {
     create(result) {
         connection.query(
             `INSERT INTO contract(type)
-                VALUES (${this.type})`,
+            VALUES (?)`,
+            [this.type],
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
-
                     return result(err, null);
                 }
-
-                this.contract_id = res.insertId
-                result(null, { ...this })
+                this.contract_id = res.insertId;
+                result(null, {...this});
             }
         )
+
     }
 
 
@@ -57,16 +57,21 @@ class Contract {
     updateById(result) {
         connection.query(
             `UPDATE contract SET 
-            type = ${this.type} 
-            WHERE contract_id = ${this.contract_id}`,
+            type = ?
+            WHERE contract_id = ?`,
+            [
+                this.type,
+                this.contract_id
+            ],
             (err, res) => {
                 if (err) {
-                    console.log("error: ", err)
-                    return result(err, null)
+                    console.log("error: ", err);
+                    return result(err, null);
                 }
                 return result(null, res)
             }
         )
+        
     }
 
 

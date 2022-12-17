@@ -9,17 +9,18 @@ class Useraccess {
     create(result){
         connection.query(
             `INSERT INTO user_access(role, access_level)
-                VALUES (${this.access_level})`,
+            VALUES (?, ?)`,
+            [this.role, this.access_level],
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
-
                     return result(err, null);
                 }
 
-                this.role = res.insertId
-                result(null, { ...this })
+                this.role = res.insertId;
+                result(null, {...this});
             }
+
         )
     }
 
@@ -53,17 +54,21 @@ class Useraccess {
     updateById(result){
         connection.query(
             `UPDATE user_access SET 
-            access_level = ${this.access_level} 
-            WHERE role = ${this.role}`,
+            access_level = ?
+            WHERE role = ?`,
+            [
+                this.access_level,
+                this.role
+            ],
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
                     return result(err, null);
                 }
-
                 return result(null, res)
             }
         )
+        
     }
 
     static deleteById(role, result){

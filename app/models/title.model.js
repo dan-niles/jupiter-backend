@@ -9,19 +9,21 @@ class Title{
     create(result){
         connection.query(
             `INSERT INTO title(job_title)
-                VALUES (${this.job_title})`,
+            VALUES (?)`,
+            [this.job_title],
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
-
                     return result(err, null);
                 }
-
-                this.title_id = res.insertId
-                result(null, { ...this })
+                this.title_id = res.insertId;
+                result(null, {...this});
             }
         )
     }
+
+
+
 
 
     static getAll(result){
@@ -55,8 +57,12 @@ class Title{
     updateById(result){
         connection.query(
             `UPDATE title SET 
-            job_title = ${this.job_title} 
-            WHERE title_id = ${this.title_id}`,
+            job_title = ?
+            WHERE title_id = ?`,
+            [
+                this.job_title, 
+                this.title_id
+            ],
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
@@ -65,6 +71,7 @@ class Title{
                 return result(null, res)
             }
         )
+
     }
 
     static deleteById(title_id, result){

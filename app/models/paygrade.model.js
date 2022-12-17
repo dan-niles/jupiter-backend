@@ -13,16 +13,16 @@ class Paygrade{
     create(result){
         connection.query(
             `INSERT INTO paygrade(level, annual, casual, maternity, no_pay)
-                VALUES (${this.level}, ${this.annual}, ${this.casual}, ${this.maternity}, ${this.no_pay})`,
+            VALUES (?, ?, ?, ?, ?)`,
+            [this.level, this.annual, this.casual, this.maternity, this.no_pay],
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
-
                     return result(err, null);
                 }
 
-                this.paygrade_id = res.insertId
-                result(null, { ...this })
+                this.paygrade_id = res.insertId;
+                result(null, {...this});
             }
         )
     }
@@ -58,21 +58,23 @@ class Paygrade{
 
     updateById(result){
         connection.query(
-            `UPDATE paygrade SET 
-            level = ${this.level}, 
-            annual = ${this.annual}, 
-            casual = ${this.casual}, 
-            maternity = ${this.maternity}, 
-            no_pay = ${this.no_pay} 
-            WHERE paygrade_id = ${this.paygrade_id}`,
+            `UPDATE paygrade SET
+            level = ?,
+            annual = ?,
+            casual = ?,
+            maternity = ?,
+            no_pay = ?
+            WHERE paygrade_id = ?`,
+            [this.level, this.annual, this.casual, this.maternity, this.no_pay, this.paygrade_id],
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
                     return result(err, null)
                 }
-                return result(null, res)
+                return result(null, {...this})
             }
         )
+        
     }
 
     static deleteById(paygrade_id, result){

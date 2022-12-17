@@ -9,16 +9,15 @@ class Status {
     create(result) {
         connection.query(
             `INSERT INTO status(type)
-                VALUES (${this.type})`,
+            VALUES (?)`,
+            [this.type],
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
-
                     return result(err, null);
                 }
-
-                this.status_id = res.insertId
-                result(null, { ...this })
+                this.status_id = res.insertId;
+                result(null, {...this});
             }
         )
     }
@@ -55,14 +54,18 @@ class Status {
     updateById(result) {
         connection.query(
             `UPDATE status SET 
-            type = ${this.type} 
-            WHERE status_id = ${this.status_id}`,
+            type = ?
+            WHERE status_id = ?`,
+            [
+                this.type,
+                this.status_id
+            ],
             (err, res) => {
                 if (err) {
-                    console.log("error: ", err)
-                    return result(err, null)
+                    console.log("error: ", err);
+                    return result(err, null);
                 }
-                return result(null, res)
+                return result(null, res);
             }
         )
     }
