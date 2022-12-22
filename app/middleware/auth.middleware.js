@@ -5,7 +5,9 @@ dotenv.config();
 
 const validateToken = (req, res, next) => {
 	const token =
-		req.headers["access-token"] || req.body.token || req.query.token;
+		req.headers["access-token"] ||
+		req.body.headers["access-token"] ||
+		req.query.token;
 
 	if (!token) {
 		return res.status(403).send("A token is required for authentication");
