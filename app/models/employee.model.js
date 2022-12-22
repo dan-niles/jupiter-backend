@@ -1,6 +1,4 @@
-
-import connection from "../config/db.js"
-
+import connection from "../config/db.js";
 
 class Employee {
 	constructor(
@@ -19,34 +17,31 @@ class Employee {
 		supervisor_id,
 		paygrade_id
 	) {
-		this.emp_id = emp_id
-		this.full_name = full_name
-		this.first_name = first_name
-		this.last_name = last_name
-		this.birthdate = birthdate
-		this.marital_status = marital_status
-		this.dept_id = dept_id
-		this.email = email
-		this.nic = nic
-		this.status_id = status_id
-		this.contract_id = contract_id
-		this.title_id = title_id
-		this.supervisor_id = supervisor_id
-		this.paygrade_id = paygrade_id
+		this.emp_id = emp_id;
+		this.full_name = full_name;
+		this.first_name = first_name;
+		this.last_name = last_name;
+		this.birthdate = birthdate;
+		this.marital_status = marital_status;
+		this.dept_id = dept_id;
+		this.email = email;
+		this.nic = nic;
+		this.status_id = status_id;
+		this.contract_id = contract_id;
+		this.title_id = title_id;
+		this.supervisor_id = supervisor_id;
+		this.paygrade_id = paygrade_id;
 	}
 
 	static getAll(result) {
-		connection.query(
-			`SELECT * FROM employee`,
-			(err, res) => {
-				if (err) {
-					result(null, res)
-					return
-				}
-
-				result(null, res)
+		connection.query(`SELECT * FROM employee`, (err, res) => {
+			if (err) {
+				result(null, res);
+				return;
 			}
-		)
+
+			result(null, res);
+		});
 	}
 
 	static getById(emp_id, result) {
@@ -55,12 +50,26 @@ class Employee {
 			[emp_id],
 			(err, res) => {
 				if (err) {
-					return result(null, res)
+					return result(null, res);
 				}
 
-				result(null, res)
+				result(null, res);
 			}
-		)
+		);
+	}
+
+	static getByDepartmentID(dept_id, result) {
+		connection.query(
+			`SELECT * FROM employee WHERE dept_id = ?`,
+			[dept_id],
+			(err, res) => {
+				if (err) {
+					return result(null, res);
+				}
+
+				result(null, res);
+			}
+		);
 	}
 
 	create(result) {
@@ -97,16 +106,16 @@ class Employee {
 				this.contract_id,
 				this.title_id,
 				this.supervisor_id,
-				this.paygrade_id
+				this.paygrade_id,
 			],
 			(err, res) => {
 				if (err) {
-					return result(null, err)
+					return result(null, err);
 				}
 
-				result(null, res)
+				result(null, res);
 			}
-		)
+		);
 	}
 
 	edit(result) {
@@ -142,15 +151,15 @@ class Employee {
 				this.title_id,
 				this.supervisor_id,
 				this.paygrade_id,
-				this.emp_id
+				this.emp_id,
 			],
 			(err, res) => {
 				if (err) {
-					return result(err, null)
+					return result(err, null);
 				}
-				return result(null, res)
+				return result(null, res);
 			}
-		)
+		);
 	}
 
 	static remove(emp_id, result) {
@@ -159,17 +168,17 @@ class Employee {
 			[emp_id],
 			(err, res) => {
 				if (err) {
-					return result(null, err)
+					return result(null, err);
 				}
 
 				if (res.affectedRows === 0) {
-					return result({ error: `user with id ${emp_id} not found.` })
+					return result({ error: `user with id ${emp_id} not found.` });
 				}
 
-				result(null, res)
+				result(null, res);
 			}
-		)
+		);
 	}
 }
 
-export default Employee
+export default Employee;
