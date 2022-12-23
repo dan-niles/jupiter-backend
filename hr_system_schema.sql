@@ -633,37 +633,38 @@ COMMIT;
 
 
 
-
 -----
 --Create triggers for updating leave balances after a leave is approved by supervisor
+-----
 
 
-create trigger update_leaveBalances_trigger
-after insert  on leave_application
+delimiter $$
+create trigger update_leaveBalances_trigge
+after update  on leave_application
 for each row
 begin
   if new.status='approved' and new.leave_type='annual' then
            update leave_balance l
            set l.annual = l.annual-1
-           where l.emp_id = new.emp_id ;
+           where l.emp_id = new.emp_id;
   end if;
   if new.status='approved' and new.leave_type='casual' then
            update leave_balance l
            set l.casual = l.casual-1
-           where l.emp_id = new.emp_id ;
+           where l.emp_id = new.emp_id;
   end if;
   if new.status='approved' and new.leave_type='maternity' then
            update leave_balance l
            set l.maternity = l.maternity-1
-           where l.emp_id = new.emp_id ;
+           where l.emp_id = new.emp_id;
   end if;
   if new.status='approved' and new.leave_type='no_pay' then
            update leave_balance l
            set l.no_pay = l.no_pay-1
-           where l.emp_id = new.emp_id ;
+           where l.emp_id = new.emp_id;
   end if;
 end;
-
+$$
 
  
 
