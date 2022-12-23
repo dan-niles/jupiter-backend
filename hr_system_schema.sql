@@ -210,6 +210,8 @@ CREATE TABLE `leave_application` (
   `status` enum('pending','approved','declined') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
+
 --
 -- Dumping data for table `leave_application`
 --
@@ -632,11 +634,12 @@ COMMIT;
 
 
 
+-----
 --Create triggers for updating leave balances after a leave is approved by supervisor
 
 
 create trigger update_leaveBalances_trigger
-after insert on leave_application
+after insert  on leave_application
 for each row
 begin
   if new.status='approved' and new.leave_type='annual' then
@@ -663,14 +666,7 @@ end;
 
 
  
---Make procedures for adding new columns for tabl. 
 
-create procedure dept_count_proc (in dept_id int , out d_count integer)
-begin
-  select count(*) into d_count
-  from employee
-  where employee.dept_id = dept_count_proc.dept_id;
-end
 
 
 
