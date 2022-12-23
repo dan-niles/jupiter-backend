@@ -1,10 +1,12 @@
 import express from "express";
 import cors from "cors";
 
+import validateToken from "./app/middleware/auth.middleware.js";
+
 // Routes
 import userRoutes from "./app/routes/user.routes.js";
 import loginRoutes from "./app/routes/login.routes.js";
-import validateToken from "./app/middleware/auth.middleware.js";
+import employeeRoutes from "./app/routes/employee.routes.js"
 
 const app = express();
 
@@ -23,10 +25,11 @@ app.get("/", (req, res) => {
 app.use("/api/login", loginRoutes);
 
 // Using authentication for the below
-app.use(validateToken);
+// app.use(validateToken);
 
 // Initializaing routes
 app.use("/api/user", userRoutes);
+app.use("/api/employee", employeeRoutes)
 
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}.`);

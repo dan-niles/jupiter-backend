@@ -1,7 +1,7 @@
 import connection from "../config/db.js";
 
 class Employee {
-	constructor(
+	constructor({
 		emp_id,
 		full_name,
 		first_name,
@@ -16,7 +16,7 @@ class Employee {
 		title_id,
 		supervisor_id,
 		paygrade_id
-	) {
+	}) {
 		this.emp_id = emp_id;
 		this.full_name = full_name;
 		this.first_name = first_name;
@@ -34,42 +34,23 @@ class Employee {
 	}
 
 	static getAll(result) {
-		connection.query(`SELECT * FROM employee`, (err, res) => {
-			if (err) {
-				result(null, res);
-				return;
-			}
-
-			result(null, res);
-		});
+		connection.query(`SELECT * FROM employee`, result);
 	}
 
 	static getById(emp_id, result) {
 		connection.query(
 			`SELECT * FROM employee WHERE emp_id = ?`,
 			[emp_id],
-			(err, res) => {
-				if (err) {
-					return result(null, res);
-				}
-
-				result(null, res);
-			}
-		);
+			result
+		)
 	}
 
 	static getByDepartmentID(dept_id, result) {
 		connection.query(
 			`SELECT * FROM employee WHERE dept_id = ?`,
 			[dept_id],
-			(err, res) => {
-				if (err) {
-					return result(null, res);
-				}
-
-				result(null, res);
-			}
-		);
+			result
+		)
 	}
 
 	create(result) {
@@ -108,14 +89,8 @@ class Employee {
 				this.supervisor_id,
 				this.paygrade_id,
 			],
-			(err, res) => {
-				if (err) {
-					return result(null, err);
-				}
-
-				result(null, res);
-			}
-		);
+			result
+		)
 	}
 
 	edit(result) {
@@ -153,12 +128,7 @@ class Employee {
 				this.paygrade_id,
 				this.emp_id,
 			],
-			(err, res) => {
-				if (err) {
-					return result(err, null);
-				}
-				return result(null, res);
-			}
+			result
 		);
 	}
 
@@ -166,17 +136,7 @@ class Employee {
 		connection.query(
 			`DELETE FROM employee WHERE emp_id = ?`,
 			[emp_id],
-			(err, res) => {
-				if (err) {
-					return result(null, err);
-				}
-
-				if (res.affectedRows === 0) {
-					return result({ error: `user with id ${emp_id} not found.` });
-				}
-
-				result(null, res);
-			}
+			result
 		);
 	}
 }
