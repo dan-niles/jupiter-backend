@@ -639,8 +639,8 @@ COMMIT;
 
 
 delimiter $$
-create trigger update_leaveBalances_trigge
-after update  on leave_application
+create trigger update_leaveBalances_trigger
+after update on leave_application
 for each row
 begin
   if new.status='approved' and new.leave_type='annual' then
