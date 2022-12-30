@@ -27,6 +27,12 @@ SET time_zone = "+00:00";
 -- Table structure for table `branch`
 --
 
+DROP DATABASE IF EXISTS hrm;
+
+CREATE DATABASE hrm;
+
+use hrm;
+
 CREATE TABLE `branch` (
   `branch_id` int NOT NULL,
   `branch_name` varchar(50) NOT NULL,
