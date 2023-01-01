@@ -6,7 +6,8 @@ import validateToken from "./app/middleware/auth.middleware.js";
 // Routes
 import userRoutes from "./app/routes/user.routes.js";
 import loginRoutes from "./app/routes/login.routes.js";
-import employeeRoutes from "./app/routes/employee.routes.js"
+import employeeRoutes from "./app/routes/employee.routes.js";
+import orgInfoRoutes from "./app/routes/org_info.routes.js";
 
 const app = express();
 
@@ -29,7 +30,8 @@ app.use("/api/login", loginRoutes);
 
 // Initializaing routes
 app.use("/api/user", userRoutes);
-app.use("/api/employee", employeeRoutes)
+app.use("/api/employee", employeeRoutes);
+app.use("/api/org_info", orgInfoRoutes);
 
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}.`);
