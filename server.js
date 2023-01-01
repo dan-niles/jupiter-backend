@@ -9,6 +9,7 @@ import loginRoutes from "./app/routes/login.routes.js";
 import employeeRoutes from "./app/routes/employee.routes.js";
 import orgInfoRoutes from "./app/routes/org_info.routes.js";
 import customAttrRoutes from "./app/routes/custom_attributes.routes.js";
+import paygradeRoutes from "./app/routes/paygrade.routes.js";
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/employee", employeeRoutes);
 app.use("/api/org_info", orgInfoRoutes);
 app.use("/api/custom_attributes", customAttrRoutes);
+app.use("/api/paygrade", paygradeRoutes);
 
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}.`);
