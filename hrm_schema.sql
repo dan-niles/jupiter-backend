@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 16, 2022 at 12:07 PM
+-- Generation Time: Dec 22, 2022 at 05:52 PM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.0
 
@@ -26,6 +26,12 @@ SET time_zone = "+00:00";
 --
 -- Table structure for table `branch`
 --
+
+DROP DATABASE IF EXISTS hrm;
+
+CREATE DATABASE hrm;
+
+use hrm;
 
 CREATE TABLE `branch` (
   `branch_id` int NOT NULL,
@@ -192,7 +198,8 @@ INSERT INTO `employee` (`emp_id`, `full_name`, `first_name`, `last_name`, `birth
 CREATE TABLE `emp_detail` (
   `emp_id` int NOT NULL,
   `nationality` varchar(255) NOT NULL,
-  `blood_group` varchar(255) NOT NULL
+  `blood_group` varchar(255) NOT NULL,
+  `test` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -344,20 +351,21 @@ INSERT INTO `title` (`title_id`, `job_title`) VALUES
 
 CREATE TABLE `user` (
   `user_id` int NOT NULL,
-  `emp_id` varchar(5) UNIQUE NOT NULL,
+  `emp_id` varchar(5) NOT NULL,
   `role` varchar(50) NOT NULL,
   `username` varchar(40) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `password` varchar(255) NOT NULL,
+  `is_active` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `emp_id`, `role`, `username`, `password`) VALUES
-(1, '00001', 'admin', 'admin', '$2b$10$m/AKAaGV7Q6iG/UflAWfdegk/.HROYPAveo219Peh6BbkxMOyEJWu'),
-(2, '00004', 'user', 'user', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C'),
-(3, '00003', 'manager', 'manager', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C');
+INSERT INTO `user` (`user_id`, `emp_id`, `role`, `username`, `password`, `is_active`) VALUES
+(1, '00001', 'admin', 'admin', '$2b$10$m/AKAaGV7Q6iG/UflAWfdegk/.HROYPAveo219Peh6BbkxMOyEJWu', 1),
+(2, '00004', 'user', 'user', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1),
+(3, '00003', 'manager', 'manager', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1);
 
 -- --------------------------------------------------------
 
@@ -401,7 +409,8 @@ ALTER TABLE `contract`
 --
 ALTER TABLE `custom_attribute`
   ADD PRIMARY KEY (`atttr_id`),
-  ADD UNIQUE KEY `field_name` (`attr_name`);
+  ADD UNIQUE KEY `field_name` (`attr_name`),
+  ADD UNIQUE KEY `attr_name` (`attr_name`);
 
 --
 -- Indexes for table `department`
@@ -624,6 +633,37 @@ ALTER TABLE `user`
   ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`),
   ADD CONSTRAINT `user_ibfk_2` FOREIGN KEY (`role`) REFERENCES `user_access` (`role`);
 COMMIT;
+
+-----
+--Create triggers for updating leave balances after a leave is approved by supervisor
+-----
+delimiter $$
+create trigger update_leaveBalances_trigger
+after update on leave_application
+for each row
+begin
+  if new.status='approved' and new.leave_type='annual' then
+           update leave_balance l
+           set l.annual = l.annual-1
+           where l.emp_id = new.emp_id;
+  end if;
+  if new.status='approved' and new.leave_type='casual' then
+           update leave_balance l
+           set l.casual = l.casual-1
+           where l.emp_id = new.emp_id;
+  end if;
+  if new.status='approved' and new.leave_type='maternity' then
+           update leave_balance l
+           set l.maternity = l.maternity-1
+           where l.emp_id = new.emp_id;
+  end if;
+  if new.status='approved' and new.leave_type='no_pay' then
+           update leave_balance l
+           set l.no_pay = l.no_pay-1
+           where l.emp_id = new.emp_id;
+  end if;
+end;
+$$
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
