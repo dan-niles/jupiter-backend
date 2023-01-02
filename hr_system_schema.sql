@@ -678,12 +678,10 @@ $$
 
 create procedure employee_of(name varchar(100))
 begin
-  --select emp_id,full_name from employee inner join departmentt using( dept_id) where departmentt.dept_name = name;
    select emp_id,full_name from employee where dept_id in(select dept_id from departmentt where dept_name = name);
 
 end
 $$
-
 
 
 -----------------------------------------------------
