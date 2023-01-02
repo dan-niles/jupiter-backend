@@ -688,7 +688,6 @@ $$
 --- function for retrive the number of leave balances for the employees by types of leaves
 -----------------------------------------------------
 
-
 create function noOfLeaves(id varchar(5))
 returns char(250)
 deterministic
