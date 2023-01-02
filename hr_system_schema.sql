@@ -633,9 +633,9 @@ COMMIT;
 
 
 
------
+--------------------------------------------------
 --Create triggers for updating leave balances after a leave is approved by supervisor
------
+--------------------------------------------------
 
 
 delimiter $$
@@ -666,9 +666,41 @@ begin
 end;
 $$
 
- 
 
 
+
+--------------------------------------------------
+-- retrive the employee details by department
+--------------------------------------------------
+
+create procedure employee_of(name varchar(100))
+begin
+  --select emp_id,full_name from employee inner join departmentt using( dept_id) where departmentt.dept_name = name;
+   select emp_id,full_name from employee where dept_id in(select dept_id from departmentt where dept_name = name);
+
+end
+$$
+
+
+
+-----------------------------------------------------
+--- function for retrive the number of leave balances for the employees by types of leaves
+-----------------------------------------------------
+
+
+create function noOfLeaves(id varchar(5))
+returns char(250)
+deterministic
+begin
+    declare a1,a2,a3,a4 int;
+    set a1 = 0, a2=0 , a3=0, a4=0;
+    select annual    into a1 from leave_balance where emp_id=id;
+    select casual    into a2 from leave_balance where emp_id=id;
+    select maternity into a3 from leave_balance where emp_id=id;
+    select no_pay    into a4 from leave_balance where emp_id=id;
+    return concat('annual : ', a1 ,', casual : ', a2 ,', maternity : ', a3 ,', no_pay : ', a4 );
+end;
+$$
 
 
 
