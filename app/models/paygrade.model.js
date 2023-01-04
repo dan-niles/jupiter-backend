@@ -1,7 +1,7 @@
 import connection from "../config/db.js";
 
 class Paygrade {
-	constructor(paygrade_id, level, annual, casual, maternity, no_pay) {
+	constructor({ paygrade_id, level, annual, casual, maternity, no_pay }) {
 		this.paygrade_id = paygrade_id;
 		this.level = level;
 		this.annual = annual;
@@ -52,22 +52,14 @@ class Paygrade {
 	}
 
 	updateById(result) {
+		console.log(this);
 		connection.query(
-			`UPDATE paygrade SET
-            level = ?,
-            annual = ?,
+			`UPDATE paygrade SET 
+			annual = ?,
             casual = ?,
             maternity = ?,
-            no_pay = ?
-            WHERE paygrade_id = ?`,
-			[
-				this.level,
-				this.annual,
-				this.casual,
-				this.maternity,
-				this.no_pay,
-				this.paygrade_id,
-			],
+            no_pay = ? WHERE paygrade_id = ?`,
+			[this.annual, this.casual, this.maternity, this.no_pay, this.paygrade_id],
 			(err, res) => {
 				if (err) {
 					console.log("error: ", err);
