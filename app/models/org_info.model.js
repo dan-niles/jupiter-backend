@@ -43,11 +43,9 @@ class OrgInfo {
 	update(result) {
 		connection.query(
 			`UPDATE org_info SET
-            info_field = ?,
-            alias = ?,
             value = ?
             WHERE id = ?`,
-			[this.info_field, this.alias, this.value, this.id],
+			[this.value, this.id],
 			result
 		);
 	}

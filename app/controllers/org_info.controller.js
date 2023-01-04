@@ -35,7 +35,7 @@ export const update = (req, res) => {
 
 	org_info.id = req.params.id;
 
-	org_info.updateById((err, data) => {
+	org_info.update((err, data) => {
 		if (err) {
 			if (err.kind === "not_found") {
 				res.status(404).send({
