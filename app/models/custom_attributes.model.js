@@ -32,14 +32,13 @@ class CustomAttributes {
 		connection.query(
 			`INSERT INTO custom_attribute
             (
-                attr_id,
                 attr_name,
                 alias,
                 data_type
             )
             VALUES
-            (?,?,?,? )`,
-			[this.attr_id, this.attr_name, this.alias, this.data_type],
+            (?,?,?)`,
+			[this.attr_name, this.alias, this.data_type],
 			result
 		);
 	}
