@@ -53,10 +53,10 @@ class CustomAttributes {
 		);
 	}
 
-	delete(result) {
+	static delete(attr_id, result) {
 		connection.query(
 			`DELETE FROM custom_attribute WHERE attr_id = ?`,
-			[this.attr_id],
+			[attr_id],
 			result
 		);
 	}
