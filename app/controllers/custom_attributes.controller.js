@@ -66,7 +66,9 @@ export const update = (req, res) => {
 
 	custom_attr.attr_id = req.params.attr_id;
 
-	custom_attr.updateById((err, data) => {
+	console.log(custom_attr.attr_id);
+
+	custom_attr.update((err, data) => {
 		if (err) {
 			if (err.kind === "not_found") {
 				res.status(404).send({
