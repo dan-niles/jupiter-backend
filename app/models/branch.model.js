@@ -1,18 +1,11 @@
 import connection from "../config/db.js";
 
-class Branch {
+export default class Branch {
     constructor(branch_id, branch_name, address, country) {
         this.branch_id = branch_id;
         this.branch_name = branch_name;
         this.address = address;
         this.country = country;
-    }
-
-    constructor(branch_id, branch_name, address, country) {
-        this.branch_id = branch_id
-        this.branch_name = branch_name
-        this.address = address
-        this.country = country
     }
 
     create(handleDBResponse) {

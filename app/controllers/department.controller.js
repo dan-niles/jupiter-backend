@@ -1,4 +1,4 @@
-import Department from "../models/department.model";
+import Department from "../models/department.model.js";
 
 export default class DepartmentCtrl {
 
