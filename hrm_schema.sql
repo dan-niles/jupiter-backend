@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 22, 2022 at 05:52 PM
+-- Generation Time: Jan 05, 2023 at 01:40 AM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.0
 
@@ -27,12 +27,6 @@ SET time_zone = "+00:00";
 -- Table structure for table `branch`
 --
 
-DROP DATABASE IF EXISTS hrm;
-
-CREATE DATABASE hrm;
-
-use hrm;
-
 CREATE TABLE `branch` (
   `branch_id` int NOT NULL,
   `branch_name` varchar(50) NOT NULL,
@@ -45,7 +39,10 @@ CREATE TABLE `branch` (
 --
 
 INSERT INTO `branch` (`branch_id`, `branch_name`, `address`, `country`) VALUES
-(1, 'Katubedda', '26 Piliyandala Road, Katubedda, Colombo', 'Sri Lanka');
+(1, 'Katubedda', '26 Piliyandala Road, Katubedda, Colombo', 'Sri Lanka'),
+(2, 'Mumbai', '16 - Waman Patil Ind Estate, Near Dukes Factory, Chembur', 'India'),
+(3, 'Dhaka', 'Meher Tower (7th Floor); 164 Sonargaon Road, Hatirpool, 1205', 'Bangladesh'),
+(4, 'Karachi', 'Block-17, Gulistan-E-Jouhar, Karachi', 'Pakistan');
 
 -- --------------------------------------------------------
 
@@ -75,7 +72,7 @@ INSERT INTO `contract` (`contract_id`, `type`) VALUES
 --
 
 CREATE TABLE `custom_attribute` (
-  `atttr_id` int NOT NULL,
+  `attr_id` int NOT NULL,
   `attr_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `alias` varchar(255) NOT NULL,
   `data_type` enum('VARCHAR','INT','DATE') NOT NULL
@@ -85,7 +82,7 @@ CREATE TABLE `custom_attribute` (
 -- Dumping data for table `custom_attribute`
 --
 
-INSERT INTO `custom_attribute` (`atttr_id`, `attr_name`, `alias`, `data_type`) VALUES
+INSERT INTO `custom_attribute` (`attr_id`, `attr_name`, `alias`, `data_type`) VALUES
 (1, 'nationality', 'Nationality', 'VARCHAR'),
 (2, 'blood_group', 'Blood Group', 'VARCHAR');
 
@@ -98,20 +95,19 @@ INSERT INTO `custom_attribute` (`atttr_id`, `attr_name`, `alias`, `data_type`) V
 CREATE TABLE `department` (
   `dept_id` int NOT NULL,
   `dept_name` varchar(50) NOT NULL,
-  `building` varchar(50) NOT NULL,
-  `branch_id` int NOT NULL
+  `dept_code` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `department`
 --
 
-INSERT INTO `department` (`dept_id`, `dept_name`, `building`, `branch_id`) VALUES
-(1, 'ICT', '', 1),
-(2, 'HR', '', 1),
-(3, 'Finance', '', 1),
-(4, 'Marketing', '', 1),
-(5, 'Production', '', 1);
+INSERT INTO `department` (`dept_id`, `dept_name`, `dept_code`) VALUES
+(1, 'ICT', 'D0001'),
+(2, 'HR', 'D0002'),
+(3, 'Finance', 'D0003'),
+(4, 'Marketing', 'D0004'),
+(5, 'Production', 'D0005');
 
 -- --------------------------------------------------------
 
@@ -198,8 +194,7 @@ INSERT INTO `employee` (`emp_id`, `full_name`, `first_name`, `last_name`, `birth
 CREATE TABLE `emp_detail` (
   `emp_id` int NOT NULL,
   `nationality` varchar(255) NOT NULL,
-  `blood_group` varchar(255) NOT NULL,
-  `test` int NOT NULL
+  `blood_group` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -222,7 +217,7 @@ CREATE TABLE `leave_application` (
 --
 
 INSERT INTO `leave_application` (`leave_id`, `emp_id`, `leave_type`, `date`, `reason`, `status`) VALUES
-(1, '00001', 'annual', '2022-11-10', 'Sick leave', 'pending');
+(1, '00001', 'annual', '2022-11-10', 'Sick leave', 'approved');
 
 -- --------------------------------------------------------
 
@@ -270,7 +265,7 @@ INSERT INTO `org_info` (`id`, `info_field`, `alias`, `value`) VALUES
 (1, 'org_name', 'Organization Full Name', 'Jupiter Apparels PVT LTD'),
 (2, 'org_short_name', 'Organization Short Name', 'Jupiter'),
 (3, 'head_office', 'Head Office', 'Union Place'),
-(4, 'reg_no', 'Registration No', 'KEJ1765382'),
+(4, 'reg_no', 'Registration No', 'KEJ1765325'),
 (5, 'logo_url', 'Logo URL', 'public/assets/images/logo-text-blue.png'),
 (6, 'website', 'Company Website', 'https://www.jupiter.lk');
 
@@ -365,7 +360,9 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`user_id`, `emp_id`, `role`, `username`, `password`, `is_active`) VALUES
 (1, '00001', 'admin', 'admin', '$2b$10$m/AKAaGV7Q6iG/UflAWfdegk/.HROYPAveo219Peh6BbkxMOyEJWu', 1),
 (2, '00004', 'user', 'user', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1),
-(3, '00003', 'manager', 'manager', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1);
+(3, '00003', 'manager', 'manager', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1),
+(9, '00001', 'manager', 'test', '$2b$10$.ojZUgx.p5Eua0TjBvSyieU9WU4ECZSN69ROUhxEpm4xOVS5VrTNy', 1),
+(38, '00001', 'manager', 'manager1', '$2b$10$avwLyTG81WYwvfppIPQUC.MlFjqJxPA8494JjfAA.OAXVCcz2iHQ2', 1);
 
 -- --------------------------------------------------------
 
@@ -408,7 +405,7 @@ ALTER TABLE `contract`
 -- Indexes for table `custom_attribute`
 --
 ALTER TABLE `custom_attribute`
-  ADD PRIMARY KEY (`atttr_id`),
+  ADD PRIMARY KEY (`attr_id`),
   ADD UNIQUE KEY `field_name` (`attr_name`),
   ADD UNIQUE KEY `attr_name` (`attr_name`);
 
@@ -417,7 +414,7 @@ ALTER TABLE `custom_attribute`
 --
 ALTER TABLE `department`
   ADD PRIMARY KEY (`dept_id`),
-  ADD KEY `branch_id` (`branch_id`);
+  ADD UNIQUE KEY `dept_code` (`dept_code`);
 
 --
 -- Indexes for table `dependant`
@@ -513,7 +510,7 @@ ALTER TABLE `user_access`
 -- AUTO_INCREMENT for table `branch`
 --
 ALTER TABLE `branch`
-  MODIFY `branch_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `branch_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `contract`
@@ -525,13 +522,13 @@ ALTER TABLE `contract`
 -- AUTO_INCREMENT for table `custom_attribute`
 --
 ALTER TABLE `custom_attribute`
-  MODIFY `atttr_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `attr_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `department`
 --
 ALTER TABLE `department`
-  MODIFY `dept_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `dept_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `dependant`
@@ -579,17 +576,11 @@ ALTER TABLE `title`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `department`
---
-ALTER TABLE `department`
-  ADD CONSTRAINT `department_ibfk_1` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`branch_id`);
 
 --
 -- Constraints for table `dependant`
