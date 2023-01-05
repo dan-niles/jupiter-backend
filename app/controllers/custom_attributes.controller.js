@@ -66,8 +66,6 @@ export const update = (req, res) => {
 
 	custom_attr.attr_id = req.params.attr_id;
 
-	console.log(custom_attr.attr_id);
-
 	custom_attr.update((err, data) => {
 		if (err) {
 			if (err.kind === "not_found") {
@@ -87,7 +85,9 @@ export const update = (req, res) => {
 
 // Delete a custom_attr with the specified attr_id in the request
 export const remove = (req, res) => {
-	CustomAttr.delete(req.params.attr_id, (err, data) => {
+	const attr_name = req.body.attr_name;
+
+	CustomAttr.delete(req.params.attr_id, attr_name, (err, data) => {
 		if (err) {
 			if (err.kind === "not_found") {
 				res.status(404).send({

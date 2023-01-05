@@ -29,6 +29,7 @@ class CustomAttributes {
 	}
 
 	create(result) {
+		// Add new record to custom_attribute table
 		connection.query(
 			`INSERT INTO custom_attribute
             (
@@ -38,9 +39,11 @@ class CustomAttributes {
             )
             VALUES
             (?,?,?)`,
-			[this.attr_name, this.alias, this.data_type],
-			result
+			[this.attr_name, this.alias, this.data_type]
 		);
+
+		// Call procedure to add new column to employee_details table
+		connection.query(`CALL PR_add_emp_detail (?)`, [this.attr_name], result);
 	}
 
 	update(result) {
@@ -52,12 +55,13 @@ class CustomAttributes {
 		);
 	}
 
-	static delete(attr_id, result) {
-		connection.query(
-			`DELETE FROM custom_attribute WHERE attr_id = ?`,
-			[attr_id],
-			result
-		);
+	static delete(attr_id, attr_name, result) {
+		connection.query(`DELETE FROM custom_attribute WHERE attr_id = ?`, [
+			attr_id,
+		]);
+
+		// Call procedure to delete column from employee_details table
+		connection.query(`CALL PR_delete_emp_detail (?)`, [attr_name], result);
 	}
 }
 
