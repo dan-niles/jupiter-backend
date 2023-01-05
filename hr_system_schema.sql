@@ -707,7 +707,14 @@ $$
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
-
+CREATE PROCEDURE update_emp_detail(x varchar(255))
+BEGIN
+    SET @STMT = CONCAT("alter table emp_detail add column ", x, " varchar(255) ");
+    PREPARE emp FROM @STMT;
+    EXECUTE emp;
+    DEALLOCATE PREPARE emp;
+END;
+$$
 
 
 
