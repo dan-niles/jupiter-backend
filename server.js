@@ -12,6 +12,7 @@ import customAttrRoutes from "./app/routes/custom_attributes.routes.js";
 import paygradeRoutes from "./app/routes/paygrade.routes.js";
 import branchRoutes from "./app/routes/branch.routes.js";
 import departmentRoutes from "./app/routes/department.routes.js";
+import contractRoutes from "./app/routes/contract.routes.js"
 
 const app = express();
 
@@ -40,6 +41,8 @@ app.use("/api/custom_attributes", customAttrRoutes);
 app.use("/api/paygrade", paygradeRoutes);
 app.use("/api/branch", branchRoutes);
 app.use("/api/department", departmentRoutes);
+app.use("/api/employee", employeeRoutes)
+app.use("/api/contract", contractRoutes)
 
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}.`);
