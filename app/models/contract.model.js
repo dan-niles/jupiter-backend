@@ -8,53 +8,32 @@ class Contract {
         this.type = type;
     }
 
-    create(result) {
+    static getAll(handleDBResponse) {
+        connection.query(
+            `SELECT * FROM contract`,
+            handleDBResponse
+        )
+    }
+
+    static getById(contract_id, handleDBResponse) {
+        connection.query(
+            `SELECT * FROM contract WHERE contract_id = ?`,
+            [contract_id],
+            handleDBResponse
+        )
+    }
+
+    createNew(handleDBResponse) {
         connection.query(
             `INSERT INTO contract(type)
             VALUES (?)`,
             [this.type],
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null);
-                }
-                this.contract_id = res.insertId;
-                result(null, {...this});
-            }
+            handleDBResponse
         )
 
     }
 
-
-    static getAll(result) {
-        connection.query(
-            `SELECT * FROM contract`,
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null);
-                }
-
-                return result(null, res)
-            }
-        )
-    }
-
-
-    static getById(contract_id, result) {
-        connection.query(
-            `SELECT * FROM contract WHERE contract_id = ${contract_id}`,
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null)
-                }
-                return result(null, res)
-            }
-        )   
-    }
-    
-    updateById(result) {
+    updateById(handleDBResponse) {
         connection.query(
             `UPDATE contract SET 
             type = ?
@@ -63,28 +42,17 @@ class Contract {
                 this.type,
                 this.contract_id
             ],
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null);
-                }
-                return result(null, res)
-            }
+            handleDBResponse
         )
-        
+
     }
 
 
-deleteById(result) {
+    static deleteById(contract_id, handleDBResponse) {
         connection.query(
-            `DELETE FROM contract WHERE contract_id = ${this.contract_id}`,
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err)
-                    return result(err, null)
-                }
-                return result(null, res)
-            }
+            `DELETE FROM contract WHERE contract_id = ?`,
+            [contract_id],
+            handleDBResponse
         )
     }
 }
