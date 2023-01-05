@@ -1,6 +1,6 @@
 import connection from "../config/db";
 
-class EmergencyContact {
+class Emergencycontact {
     constructor ({
         emegency_contact_id,
         emp_id,
