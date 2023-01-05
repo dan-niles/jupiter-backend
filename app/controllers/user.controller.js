@@ -69,7 +69,10 @@ export const update = (req, res) => {
 		});
 	}
 
-	const user = new User(req.body.data);
+	// Encrypt password before storing in database
+	const password_hash = bcrypt.hashSync(req.body.data.password, 10);
+
+	const user = new User({ ...req.body.data, password: password_hash });
 
 	user.user_id = req.params.user_id;
 

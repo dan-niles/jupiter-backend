@@ -46,7 +46,7 @@ class User {
 	static getAll(result) {
 		connection.query(
 			`SELECT user.user_id, user.emp_id, user.role, user.username, user.is_active, employee.first_name, employee.last_name
-			FROM user JOIN employee ON user.emp_id = employee.emp_id`,
+			FROM user INNER JOIN employee ON user.emp_id = employee.emp_id`,
 			(err, res) => {
 				if (err) {
 					console.log("error: ", err);
@@ -61,7 +61,10 @@ class User {
 
 	static findById(user_id, result) {
 		connection.query(
-			`SELECT user_id, emp_id, role, username FROM user WHERE user_id = ?`,
+			`SELECT user.user_id, user.emp_id, user.role, user.username, user.is_active, employee.first_name, employee.last_name, department.dept_name FROM user 
+			INNER JOIN employee ON user.emp_id = employee.emp_id
+			INNER JOIN department ON employee.dept_id = department.dept_id 
+			WHERE user_id = ?`,
 			[user_id],
 			(err, res) => {
 				if (err) {
@@ -110,12 +113,10 @@ class User {
 
 	updateById(result) {
 		connection.query(
-			`UPDATE user SET
-				role = ?'
-			WHERE
-				user_id = ?
-			`,
-			[this.role, this.user_id],
+			`UPDATE user 
+			SET username = ?, password = ?, role = ? 
+			WHERE user_id = ?`,
+			[this.username, this.password, this.role, this.user_id],
 			(err, res) => {
 				if (err) {
 					console.log("Error: ", err);
