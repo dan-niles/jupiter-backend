@@ -720,6 +720,18 @@ BEGIN
 END;
 $$
 
+--
+-- procedure for delete a column in emp_detail table
+--
+
+CREATE PROCEDURE u_emp_detail(y varchar(255) )
+BEGIN
+    SET @STMT = CONCAT("alter table emp_detail drop column ", y);
+    PREPARE emp_d FROM @STMT;
+    EXECUTE emp_d;
+    DEALLOCATE PREPARE emp_d;
+END;
+$$
 
 
 
