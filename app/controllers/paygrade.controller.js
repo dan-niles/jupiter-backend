@@ -95,7 +95,7 @@ export const remove = (req, res) => {
 			} else {
 				res.status(500).send({
 					message:
-						"Could not delete paygrade with paygrade_id " +
+						"Unable not delete paygrade with paygrade_id " +
 						req.params.paygrade_id,
 				});
 			}
