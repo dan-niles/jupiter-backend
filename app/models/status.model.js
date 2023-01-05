@@ -1,88 +1,79 @@
-import connection from '../config/db.js' 
+import connection from "../config/db.js";
 
 class Status {
-    constructor(status_id,type) {
-        this.status_id = status_id;
-        this.type = type;
-    }
+	constructor(status_id, type) {
+		this.status_id = status_id;
+		this.type = type;
+	}
 
-    create(result) {
-        connection.query(
-            `INSERT INTO status(type)
+	create(result) {
+		connection.query(
+			`INSERT INTO status(type)
             VALUES (?)`,
-            [this.type],
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null);
-                }
-                this.status_id = res.insertId;
-                result(null, {...this});
-            }
-        )
-    }
+			[this.type],
+			(err, res) => {
+				if (err) {
+					console.log("error: ", err);
+					return result(err, null);
+				}
+				this.status_id = res.insertId;
+				result(null, { ...this });
+			}
+		);
+	}
 
+	static getAll(result) {
+		connection.query(`SELECT * FROM status`, (err, res) => {
+			if (err) {
+				console.log("error: ", err);
+				return result(err, null);
+			}
 
-    static getAll(result) {
-        connection.query(
-            `SELECT * FROM status`,
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null);
-                }
+			return result(null, res);
+		});
+	}
 
-                return result(null, res)
-            }
-        )
-    }
+	static getById(status_id, result) {
+		connection.query(
+			`SELECT * FROM status WHERE status_id = ${status_id}`,
+			(err, res) => {
+				if (err) {
+					console.log("error: ", err);
+					return result(err, null);
+				}
+				return result(null, res);
+			}
+		);
+	}
 
-
-    static getById(status_id, result) {
-        connection.query(
-            `SELECT * FROM status WHERE status_id = ${status_id}`,
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null)
-                }
-                return result(null, res)
-            }
-        )   
-    }
-
-    updateById(result) {
-        connection.query(
-            `UPDATE status SET 
+	updateById(result) {
+		connection.query(
+			`UPDATE status SET 
             type = ?
             WHERE status_id = ?`,
-            [
-                this.type,
-                this.status_id
-            ],
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null);
-                }
-                return result(null, res);
-            }
-        )
-    }
+			[this.type, this.status_id],
+			(err, res) => {
+				if (err) {
+					console.log("error: ", err);
+					return result(err, null);
+				}
+				return result(null, res);
+			}
+		);
+	}
 
-    static removeById(status_id, result) {
-        connection.query(
-            `DELETE FROM status WHERE status_id = ${status_id}`,
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err)
-                    return result(err, null)
-                }
-                return result(null, res)
-            }
-        )
-    }
-
+	static removeById(status_id, result) {
+		connection.query(
+			`DELETE FROM status WHERE status_id = ${status_id}`,
+			(err, res) => {
+				if (err) {
+					console.log("error: ", err);
+					return result(err, null);
+				}
+				return result(null, res);
+			}
+		);
+	}
 }
 
-module.exports = status
+export default Status;
