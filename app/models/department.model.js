@@ -1,57 +1,52 @@
-import connection from "../config/db.js";
+import connection from "../config/db"
 
-class Department {
-	constructor({ dept_id, dept_name, dept_code }) {
-		this.dept_id = dept_id;
-		this.dept_name = dept_name;
-		this.dept_code = dept_code;
-	}
+export default class Department {
 
-	static getAll(result) {
-		connection.query(`SELECT * FROM department`, result);
-	}
+    constructor(dept_id, dept_name, building, branch_id) {
+        this.dept_id = dept_id
+        this.dept_name = dept_name
+        this.building = building
+        this.branch_id = branch_id
+    }
 
-	static getById(dept_id, result) {
-		connection.query(
-			`SELECT * FROM department WHERE dept_id = ?`,
-			[dept_id],
-			result
-		);
-	}
+    static getAll(handleDBResponse) {
+        connection.query(
+            "SELECT * FROM department",
+            handleDBResponse
+        )
+    }
 
-	create(result) {
-		connection.query(
-			`INSERT INTO department
-                (
-                    dept_name,
-                    dept_code
-                )
-                VALUES
-                (?,?)`,
-			[this.dept_name, this.dept_code],
-			result
-		);
-	}
+    static getById(dept_id, handleDBResponse) {
+        connection.query(
+            "SELECT * FROM department WHERE dept_id = ?",
+            [dept_id],
+            handleDBResponse
+        )
+    }
 
-	update(result) {
-		connection.query(
-			`UPDATE department SET
-                    dept_name = ?,
-                    dept_code = ?
-                WHERE
-                    dept_id = ?`,
-			[this.dept_name, this.dept_code, this.dept_id],
-			result
-		);
-	}
+    createNew(handleDBResponse) {
+        connection.query(
+            `INSERT INTO department(dept_name, building, branch_id)
+            VALUES (?, ?, ?)`,
+            [this.dept_name, this.building, this.branch_id],
+            handleDBResponse
+        )
+    }
 
-	static delete(dept_id, result) {
-		connection.query(
-			`DELETE FROM department WHERE dept_id = ?`,
-			[dept_id],
-			result
-		);
-	}
+    updateById(handleDBResponse) {
+        connection.query(
+            `UPDATE department SET
+            dept_name = ?, building = ?, branch_id = ?
+            WHERE dept_id = ?`,
+            [this.dept_name, this.building, this.branch_id, this.dept_id]
+        )
+    }
+
+    delete(dept_id, handleDBResponse) {
+        connection.query(
+            `DELETE FROM department WHERE dept_id = ?`,
+            [dept_id],
+            handleDBResponse
+        )
+    }
 }
-
-export default Department;
