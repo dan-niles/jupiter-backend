@@ -15,7 +15,7 @@ class Employee {
 		contract_id,
 		title_id,
 		supervisor_id,
-		paygrade_id
+		paygrade_id,
 	}) {
 		this.emp_id = emp_id;
 		this.full_name = full_name;
@@ -34,7 +34,12 @@ class Employee {
 	}
 
 	static getAll(result) {
-		connection.query(`SELECT * FROM employee`, result);
+		connection.query(
+			`SELECT * FROM employee 
+			INNER JOIN title ON title.title_id=employee.emp_id
+			INNER JOIN department ON department.dept_id=employee.dept_id`,
+			result
+		);
 	}
 
 	static getById(emp_id, result) {
@@ -42,7 +47,7 @@ class Employee {
 			`SELECT * FROM employee WHERE emp_id = ?`,
 			[emp_id],
 			result
-		)
+		);
 	}
 
 	static getByDepartmentID(dept_id, result) {
@@ -50,7 +55,7 @@ class Employee {
 			`SELECT * FROM employee WHERE dept_id = ?`,
 			[dept_id],
 			result
-		)
+		);
 	}
 
 	create(result) {
@@ -90,7 +95,7 @@ class Employee {
 				this.paygrade_id,
 			],
 			result
-		)
+		);
 	}
 
 	edit(result) {
@@ -133,11 +138,7 @@ class Employee {
 	}
 
 	static remove(emp_id, result) {
-		connection.query(
-			`DELETE FROM employee WHERE emp_id = ?`,
-			[emp_id],
-			result
-		);
+		connection.query(`DELETE FROM employee WHERE emp_id = ?`, [emp_id], result);
 	}
 }
 
