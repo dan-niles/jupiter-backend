@@ -66,8 +66,6 @@ export const update = (req, res) => {
 
 	department.dept_id = req.params.dept_id;
 
-	console.log(department.dept_id);
-
 	department.update((err, data) => {
 		if (err) {
 			if (err.kind === "not_found") {
