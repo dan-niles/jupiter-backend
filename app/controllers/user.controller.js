@@ -18,11 +18,17 @@ export const create = (req, res) => {
 
 	// Save user in the database
 	user.create((err, data) => {
-		if (err)
-			res.status(500).send({
-				message: err.message || "Some error occurred while creating the user",
-			});
-		else res.send(data);
+		if (err) {
+			if (err.code === "ER_DUP_ENTRY") {
+				res.status(409).send({
+					message: "Username already exists",
+				});
+			} else {
+				res.status(500).send({
+					message: err.message || "Some error occurred while creating the user",
+				});
+			}
+		} else res.send(data);
 	});
 };
 
