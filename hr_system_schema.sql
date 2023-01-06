@@ -688,17 +688,26 @@ $$
 --- function for retrive the number of leave balances for the employees by types of leaves
 -----------------------------------------------------
 
-create function noOfLeaves(id varchar(5))
-returns char(250)
+create function noOfLeave(id varchar(5) , typeOfLeave varchar(255) )
+returns int
 deterministic
 begin
-    declare a1,a2,a3,a4 int;
-    set a1 = 0, a2=0 , a3=0, a4=0;
-    select annual    into a1 from leave_balance where emp_id=id;
-    select casual    into a2 from leave_balance where emp_id=id;
-    select maternity into a3 from leave_balance where emp_id=id;
-    select no_pay    into a4 from leave_balance where emp_id=id;
-    return concat('annual : ', a1 ,', casual : ', a2 ,', maternity : ', a3 ,', no_pay : ', a4 );
+    declare a int;
+    set a=0;
+    if typeOfLeave = 'annual' then
+           select annual    into a from leave_balance where emp_id=id;
+    end if;
+    if typeOfLeave = 'casual' then
+           select casual    into a from leave_balance where emp_id=id;
+    end if;
+    if typeOfLeave = 'maternity' then
+           select maternity into a from leave_balance where emp_id=id;
+    end if;
+    if typeOfLeave = 'no_pay' then
+           select no_pay    into a from leave_balance where emp_id=id;
+    end if;
+      
+    return a;
 end;
 $$
 
