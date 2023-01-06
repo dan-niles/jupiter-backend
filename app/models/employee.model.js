@@ -44,7 +44,7 @@ class Employee {
 
 	static getById(emp_id, result) {
 		connection.query(
-			`SELECT * FROM employee WHERE emp_id = ?`,
+			`SELECT * FROM employee INNER JOIN emp_detail ON emp_detail.emp_id=employee.emp_id WHERE employee.emp_id = ?`,
 			[emp_id],
 			result
 		);
@@ -113,10 +113,8 @@ class Employee {
 				contract_id = ?,
 				title_id = ?,
 				supervisor_id = ?,
-				paygrade_id = ?,
-			WHERE
-				emp_id = ?
-			`,
+				paygrade_id = ? 
+			WHERE emp_id = ?`,
 			[
 				this.full_name,
 				this.first_name,

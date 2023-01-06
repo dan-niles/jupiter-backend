@@ -60,6 +60,37 @@ export default class EmployeeCtrl {
 		});
 	}
 
+	static async updateOne(req, res) {
+		const emp = new Employee(req.body);
+
+		if (emp.supervisor_id === "") {
+			emp.supervisor_id = null;
+		}
+
+		emp.edit((err, result) => {
+			if (err) {
+				console.log(err);
+				switch (err.code) {
+					case "ER_DUP_ENTRY":
+						return res.status(403).send({
+							error: "Given employee ID already exists.",
+						});
+					case "ER_NO_REFERENCED_ROW_2":
+						return res.status(403).send({
+							error: "Invalid values provided.",
+						});
+					default:
+						return res.status(500).send({
+							error: "something went wrong on our side.",
+						});
+				}
+			}
+
+			res.send(result);
+			return;
+		});
+	}
+
 	static async deleteOne(req, res) {
 		const emp_id = req.params.id;
 

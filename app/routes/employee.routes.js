@@ -1,14 +1,13 @@
-import express from "express"
-import EmployeeCtrl from "../controllers/employee.controller.js"
+import express from "express";
+import EmployeeCtrl from "../controllers/employee.controller.js";
 
+const router = express.Router();
 
-const router = express.Router()
+router.route("/").get(EmployeeCtrl.getAll).post(EmployeeCtrl.createNew);
 
-router.route("/")
-    .get(EmployeeCtrl.getAll)
-    .post(EmployeeCtrl.createNew)
-
-router.route("/:id")
-    .get(EmployeeCtrl.findById)
-    .delete(EmployeeCtrl.deleteOne)
-export default router
+router
+	.route("/:id")
+	.get(EmployeeCtrl.findById)
+	.delete(EmployeeCtrl.deleteOne)
+	.put(EmployeeCtrl.updateOne);
+export default router;
