@@ -751,6 +751,23 @@ where dept_name is not null;
 -- views used for showing leaves by department
 --
 
+create view leaves_by_department 
+as 
+select 
+  dept_name, 
+  e.emp_id, 
+  full_name, 
+  leave_type, 
+  date 
+from 
+  employee  as e 
+inner join 
+department on department.dept_id=e.dept_id 
+right join  
+  leave_application as la on e.emp_id=la.emp_id 
+where dept_name is not null ;
+
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
