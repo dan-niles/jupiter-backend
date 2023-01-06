@@ -678,7 +678,7 @@ $$
 
 create procedure employee_of(name varchar(100))
 begin
-   select emp_id,full_name from employee where dept_id in(select dept_id from departmentt where dept_name = name);
+   select emp_id,full_name from employee where dept_id in(select dept_id from department where dept_name = name);
 
 end
 $$
