@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 05, 2023 at 01:40 AM
+-- Generation Time: Jan 06, 2023 at 03:25 AM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.0
 
@@ -20,6 +20,26 @@ SET time_zone = "+00:00";
 --
 -- Database: `hrm`
 --
+
+DELIMITER $$
+--
+-- Procedures
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PR_add_emp_detail` (IN `column_name` VARCHAR(255))   BEGIN
+    SET @STMT = CONCAT("ALTER TABLE emp_detail ADD COLUMN ", column_name, " VARCHAR(255)");
+    PREPARE emp FROM @STMT;
+    EXECUTE emp;
+    DEALLOCATE PREPARE emp;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PR_delete_emp_detail` (IN `column_name` VARCHAR(255))   BEGIN
+    SET @STMT = CONCAT("ALTER TABLE emp_detail DROP COLUMN ", column_name);
+    PREPARE emp_d FROM @STMT;
+    EXECUTE emp_d;
+    DEALLOCATE PREPARE emp_d;
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -60,10 +80,9 @@ CREATE TABLE `contract` (
 --
 
 INSERT INTO `contract` (`contract_id`, `type`) VALUES
-(1, 'Fulltime'),
-(2, 'Parttime'),
-(3, 'Permanent'),
-(4, 'Freelance');
+(1, 'Full-time'),
+(2, 'Part-time'),
+(3, 'Freelance');
 
 -- --------------------------------------------------------
 
@@ -84,7 +103,8 @@ CREATE TABLE `custom_attribute` (
 
 INSERT INTO `custom_attribute` (`attr_id`, `attr_name`, `alias`, `data_type`) VALUES
 (1, 'nationality', 'Nationality', 'VARCHAR'),
-(2, 'blood_group', 'Blood Group', 'VARCHAR');
+(2, 'blood_group', 'Blood Group', 'VARCHAR'),
+(17, 'religion', 'Religion', 'VARCHAR');
 
 -- --------------------------------------------------------
 
@@ -181,9 +201,46 @@ CREATE TABLE `employee` (
 
 INSERT INTO `employee` (`emp_id`, `full_name`, `first_name`, `last_name`, `birthdate`, `marital_status`, `dept_id`, `email`, `nic`, `status_id`, `contract_id`, `title_id`, `supervisor_id`, `paygrade_id`) VALUES
 ('00001', 'John Wick', 'John', 'Wick', '2000-11-16', 'single', 1, 'john@jupiter.com', '2000046782678', 1, 1, 5, NULL, 2),
-('00002', 'Dave Windler', 'Dave', 'Windler', '1997-11-19', 'married', 1, 'dave@jupiter.com', '9700046782678', 1, 1, 1, NULL, 4),
+('00002', 'Dave Windler', 'Dave', 'Windler', '1997-11-19', 'married', 1, 'dave@jupiter.com', '9700046782678', 1, 1, 1, '00001', 4),
 ('00003', 'Darren Bruen', 'Darren', 'Bruen', '1993-01-14', 'married', 2, 'darren@jupiter.com', '9600047882678', 1, 1, 6, '00002', 3),
 ('00004', 'Kurt Corwin', 'Kurt', 'Corwin', '1989-08-08', 'single', 1, 'kurt@jupiter.com', '9300047884448', 1, 1, 7, '00002', 3);
+
+--
+-- Triggers `employee`
+--
+DELIMITER $$
+CREATE TRIGGER `TR_employee_create_emp_detail` AFTER INSERT ON `employee` FOR EACH ROW BEGIN
+INSERT INTO emp_detail (emp_id) VALUES (new.emp_id);
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `TR_employee_create_leave_balance` AFTER INSERT ON `employee` FOR EACH ROW BEGIN
+DECLARE annual INT;
+DECLARE casual INT;
+DECLARE maternity INT;
+DECLARE no_pay INT;
+
+select annual,casual,maternity,no_pay  INTO annual,casual,maternity,no_pay FROM paygrade WHERE paygrade_id=NEW.paygrade_id;
+
+INSERT INTO leave_balance
+   ( emp_id, annual, casual, maternity, no_pay) VALUES
+   ( new.emp_id, @annual, @casual, @maternity, @no_pay );
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `TR_employee_delete_emp_detail` BEFORE DELETE ON `employee` FOR EACH ROW BEGIN
+DELETE FROM emp_detail l WHERE l.emp_id = old.emp_id;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `TR_employee_delete_leave_balance` BEFORE DELETE ON `employee` FOR EACH ROW BEGIN
+DELETE FROM leave_balance l WHERE l.emp_id = old.emp_id;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -192,10 +249,21 @@ INSERT INTO `employee` (`emp_id`, `full_name`, `first_name`, `last_name`, `birth
 --
 
 CREATE TABLE `emp_detail` (
-  `emp_id` int NOT NULL,
-  `nationality` varchar(255) NOT NULL,
-  `blood_group` varchar(255) NOT NULL
+  `emp_id` varchar(5) NOT NULL,
+  `nationality` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `blood_group` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `religion` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `emp_detail`
+--
+
+INSERT INTO `emp_detail` (`emp_id`, `nationality`, `blood_group`, `religion`) VALUES
+('00001', NULL, NULL, NULL),
+('00002', NULL, NULL, NULL),
+('00003', NULL, NULL, NULL),
+('00004', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -219,6 +287,35 @@ CREATE TABLE `leave_application` (
 INSERT INTO `leave_application` (`leave_id`, `emp_id`, `leave_type`, `date`, `reason`, `status`) VALUES
 (1, '00001', 'annual', '2022-11-10', 'Sick leave', 'approved');
 
+--
+-- Triggers `leave_application`
+--
+DELIMITER $$
+CREATE TRIGGER `TR_leave_application_update_leave_balance` AFTER UPDATE ON `leave_application` FOR EACH ROW BEGIN
+  IF new.status='approved' AND new.leave_type='annual' THEN
+           UPDATE leave_balance l
+           SET l.annual = l.annual-1
+           WHERE l.emp_id = new.emp_id;
+  END IF;
+  IF new.status='approved' AND new.leave_type='casual' THEN
+           UPDATE leave_balance l
+           SET l.casual = l.casual-1
+           WHERE l.emp_id = new.emp_id;
+  END IF;
+  IF new.status='approved' AND new.leave_type='maternity' THEN
+           UPDATE leave_balance l
+           SET l.maternity = l.maternity-1
+           WHERE l.emp_id = new.emp_id;
+  END IF;
+  IF new.status='approved' AND new.leave_type='no_pay' THEN
+           UPDATE leave_balance l
+           SET l.no_pay = l.no_pay-1
+           WHERE l.emp_id = new.emp_id;
+  END IF;
+END
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -227,7 +324,6 @@ INSERT INTO `leave_application` (`leave_id`, `emp_id`, `leave_type`, `date`, `re
 
 CREATE TABLE `leave_balance` (
   `emp_id` varchar(5) NOT NULL,
-  `year` year NOT NULL,
   `annual` int DEFAULT NULL,
   `casual` int DEFAULT NULL,
   `maternity` int DEFAULT NULL,
@@ -238,11 +334,11 @@ CREATE TABLE `leave_balance` (
 -- Dumping data for table `leave_balance`
 --
 
-INSERT INTO `leave_balance` (`emp_id`, `year`, `annual`, `casual`, `maternity`, `no_pay`) VALUES
-('00001', 2022, 14, 12, 10, 50),
-('00002', 2022, 14, 12, 10, 50),
-('00003', 2022, 14, 12, 10, 50),
-('00004', 2022, 14, 12, 10, 50);
+INSERT INTO `leave_balance` (`emp_id`, `annual`, `casual`, `maternity`, `no_pay`) VALUES
+('00001', 14, 12, 10, 50),
+('00002', 14, 12, 10, 50),
+('00003', 14, 12, 10, 50),
+('00004', 14, 12, 10, 50);
 
 -- --------------------------------------------------------
 
@@ -292,7 +388,7 @@ INSERT INTO `paygrade` (`paygrade_id`, `level`, `annual`, `casual`, `maternity`,
 (1, 'Level 1', 14, 12, 10, 50),
 (2, 'Level 2', 14, 12, 10, 50),
 (3, 'Level 3', 14, 12, 10, 50),
-(4, 'Level 4', 14, 12, 10, 50);
+(4, 'Level 4', 13, 14, 11, 51);
 
 -- --------------------------------------------------------
 
@@ -310,9 +406,9 @@ CREATE TABLE `status` (
 --
 
 INSERT INTO `status` (`status_id`, `type`) VALUES
-(1, 'Fulltime'),
+(2, 'Contract'),
 (3, 'Intern'),
-(2, 'Parttime');
+(1, 'Permanent');
 
 -- --------------------------------------------------------
 
@@ -361,8 +457,7 @@ INSERT INTO `user` (`user_id`, `emp_id`, `role`, `username`, `password`, `is_act
 (1, '00001', 'admin', 'admin', '$2b$10$m/AKAaGV7Q6iG/UflAWfdegk/.HROYPAveo219Peh6BbkxMOyEJWu', 1),
 (2, '00004', 'user', 'user', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1),
 (3, '00003', 'manager', 'manager', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1),
-(9, '00001', 'manager', 'test', '$2b$10$.ojZUgx.p5Eua0TjBvSyieU9WU4ECZSN69ROUhxEpm4xOVS5VrTNy', 1),
-(38, '00001', 'manager', 'manager1', '$2b$10$avwLyTG81WYwvfppIPQUC.MlFjqJxPA8494JjfAA.OAXVCcz2iHQ2', 1);
+(39, '00001', 'user', 'test1', '$2b$10$hEp5rgHFRSwMKQzT3FR0rOGHZdttQtzq5.t7QYpH4h/88V/y001Tm', 1);
 
 -- --------------------------------------------------------
 
@@ -459,7 +554,7 @@ ALTER TABLE `leave_application`
 -- Indexes for table `leave_balance`
 --
 ALTER TABLE `leave_balance`
-  ADD PRIMARY KEY (`emp_id`,`year`);
+  ADD PRIMARY KEY (`emp_id`);
 
 --
 -- Indexes for table `org_info`
@@ -522,13 +617,13 @@ ALTER TABLE `contract`
 -- AUTO_INCREMENT for table `custom_attribute`
 --
 ALTER TABLE `custom_attribute`
-  MODIFY `attr_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `attr_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `department`
 --
 ALTER TABLE `department`
-  MODIFY `dept_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `dept_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `dependant`
@@ -576,7 +671,7 @@ ALTER TABLE `title`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- Constraints for dumped tables
@@ -606,6 +701,12 @@ ALTER TABLE `employee`
   ADD CONSTRAINT `employee_ibfk_6` FOREIGN KEY (`paygrade_id`) REFERENCES `paygrade` (`paygrade_id`);
 
 --
+-- Constraints for table `emp_detail`
+--
+ALTER TABLE `emp_detail`
+  ADD CONSTRAINT `emp_detail_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
 -- Constraints for table `leave_application`
 --
 ALTER TABLE `leave_application`
@@ -624,37 +725,6 @@ ALTER TABLE `user`
   ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`),
   ADD CONSTRAINT `user_ibfk_2` FOREIGN KEY (`role`) REFERENCES `user_access` (`role`);
 COMMIT;
-
------
---Create triggers for updating leave balances after a leave is approved by supervisor
------
-delimiter $$
-create trigger update_leaveBalances_trigger
-after update on leave_application
-for each row
-begin
-  if new.status='approved' and new.leave_type='annual' then
-           update leave_balance l
-           set l.annual = l.annual-1
-           where l.emp_id = new.emp_id;
-  end if;
-  if new.status='approved' and new.leave_type='casual' then
-           update leave_balance l
-           set l.casual = l.casual-1
-           where l.emp_id = new.emp_id;
-  end if;
-  if new.status='approved' and new.leave_type='maternity' then
-           update leave_balance l
-           set l.maternity = l.maternity-1
-           where l.emp_id = new.emp_id;
-  end if;
-  if new.status='approved' and new.leave_type='no_pay' then
-           update leave_balance l
-           set l.no_pay = l.no_pay-1
-           where l.emp_id = new.emp_id;
-  end if;
-end;
-$$
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
