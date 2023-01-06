@@ -702,6 +702,9 @@ begin
 end;
 $$
 
+--
+-- procedure for create new column in emp_detail table
+--
 
 CREATE PROCEDURE update_emp_detail(column_name varchar(255))
 BEGIN
@@ -752,9 +755,6 @@ where dept_name is not null;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
---
--- procedure for create new column in emp_detail table
---
 
 
 
