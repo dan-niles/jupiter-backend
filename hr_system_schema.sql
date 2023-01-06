@@ -703,17 +703,9 @@ end;
 $$
 
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
---
--- procedure for create new column in emp_detail table
---
-
-CREATE PROCEDURE update_emp_detail(x varchar(255))
+CREATE PROCEDURE update_emp_detail(column_name varchar(255))
 BEGIN
-    SET @STMT = CONCAT("alter table emp_detail add column ", x, " varchar(255) ");
+    SET @STMT = CONCAT("alter table emp_detail add column ", column_name, " varchar(255) ");
     PREPARE emp FROM @STMT;
     EXECUTE emp;
     DEALLOCATE PREPARE emp;
@@ -724,9 +716,9 @@ $$
 -- procedure for delete a column in emp_detail table
 --
 
-CREATE PROCEDURE u_emp_detail(y varchar(255) )
+CREATE PROCEDURE u_emp_detail(column_name varchar(255) )
 BEGIN
-    SET @STMT = CONCAT("alter table emp_detail drop column ", y);
+    SET @STMT = CONCAT("alter table emp_detail drop column ", column_name);
     PREPARE emp_d FROM @STMT;
     EXECUTE emp_d;
     DEALLOCATE PREPARE emp_d;
@@ -734,6 +726,35 @@ END;
 $$
 
 
+--
+-- views used for showing employee by department
+--
+create view employee_by_department 
+as 
+select 
+  dept_name, 
+  emp_id, 
+  full_name, 
+  job_title 
+from 
+  department 
+inner join 
+  employee on department.dept_id=employee.dept_id 
+right join  
+  title on employee.title_id=title.title_id 
+where dept_name is not null;
+
+--
+-- views used for showing leaves by department
+--
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+--
+-- procedure for create new column in emp_detail table
+--
 
 
 
