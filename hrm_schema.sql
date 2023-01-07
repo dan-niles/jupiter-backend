@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 06, 2023 at 03:25 AM
+-- Generation Time: Jan 07, 2023 at 02:40 AM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.0
 
@@ -25,8 +25,14 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `PR_add_emp_detail` (IN `column_name` VARCHAR(255))   BEGIN
-    SET @STMT = CONCAT("ALTER TABLE emp_detail ADD COLUMN ", column_name, " VARCHAR(255)");
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PR_add_emp_detail` (IN `column_name` VARCHAR(255), IN `data_type` VARCHAR(255))   BEGIN
+     IF data_type = 'VARCHAR' THEN
+        SET @STMT = CONCAT("ALTER TABLE emp_detail ADD COLUMN ", column_name, " VARCHAR(255)");
+    ELSEIF data_type = 'INT' THEN
+        SET @STMT = CONCAT("ALTER TABLE emp_detail ADD COLUMN ", column_name, " INT");
+    ELSEIF data_type = 'DATE' THEN
+        SET @STMT = CONCAT("ALTER TABLE emp_detail ADD COLUMN ", column_name, " DATE");
+    END IF;
     PREPARE emp FROM @STMT;
     EXECUTE emp;
     DEALLOCATE PREPARE emp;
@@ -38,6 +44,31 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `PR_delete_emp_detail` (IN `column_n
     EXECUTE emp_d;
     DEALLOCATE PREPARE emp_d;
 END$$
+
+--
+-- Functions
+--
+-----------------------------------------------------
+--- function for retrive the number of leave balances for the employees by types of leaves
+-----------------------------------------------------
+CREATE DEFINER=`root`@`localhost` FUNCTION `FN_no_of_leaves` (`id` VARCHAR(5), `typeOfLeave` VARCHAR(255)) RETURNS INT DETERMINISTIC COMMENT 'function to retrieve the number of leave balances for the employ' begin
+    declare a int;
+    set a=0;
+    if typeOfLeave = 'annual' then
+           select annual    into a from leave_balance where emp_id=id;
+    end if;
+    if typeOfLeave = 'casual' then
+           select casual    into a from leave_balance where emp_id=id;
+    end if;
+    if typeOfLeave = 'maternity' then
+           select maternity into a from leave_balance where emp_id=id;
+    end if;
+    if typeOfLeave = 'no_pay' then
+           select no_pay    into a from leave_balance where emp_id=id;
+    end if;
+      
+    return a;
+end$$
 
 DELIMITER ;
 
@@ -104,7 +135,8 @@ CREATE TABLE `custom_attribute` (
 INSERT INTO `custom_attribute` (`attr_id`, `attr_name`, `alias`, `data_type`) VALUES
 (1, 'nationality', 'Nationality', 'VARCHAR'),
 (2, 'blood_group', 'Blood Group', 'VARCHAR'),
-(17, 'religion', 'Religion', 'VARCHAR');
+(3, 'religion', 'Religion', 'VARCHAR'),
+(9, 'date_joined', 'Date Joined', 'DATE');
 
 -- --------------------------------------------------------
 
@@ -200,10 +232,11 @@ CREATE TABLE `employee` (
 --
 
 INSERT INTO `employee` (`emp_id`, `full_name`, `first_name`, `last_name`, `birthdate`, `marital_status`, `dept_id`, `email`, `nic`, `status_id`, `contract_id`, `title_id`, `supervisor_id`, `paygrade_id`) VALUES
-('00001', 'John Wick', 'John', 'Wick', '2000-11-16', 'single', 1, 'john@jupiter.com', '2000046782678', 1, 1, 5, NULL, 2),
+('00001', 'Johnathan Wick', 'John', 'Wick', '2000-11-16', 'single', 1, 'john@jupiter.com', '2000046782678', 1, 1, 5, NULL, 2),
 ('00002', 'Dave Windler', 'Dave', 'Windler', '1997-11-19', 'married', 1, 'dave@jupiter.com', '9700046782678', 1, 1, 1, '00001', 4),
-('00003', 'Darren Bruen', 'Darren', 'Bruen', '1993-01-14', 'married', 2, 'darren@jupiter.com', '9600047882678', 1, 1, 6, '00002', 3),
-('00004', 'Kurt Corwin', 'Kurt', 'Corwin', '1989-08-08', 'single', 1, 'kurt@jupiter.com', '9300047884448', 1, 1, 7, '00002', 3);
+('00003', 'Darren John Bruen', 'Darren', 'Bruen', '1993-01-14', 'married', 2, 'darren@jupiter.com', '9600047882678', 1, 1, 6, '00002', 3),
+('00004', 'Kurt Corwin', 'Kurt', 'Corwin', '1989-08-08', 'single', 1, 'kurt@jupiter.com', '9300047884448', 1, 1, 7, '00002', 3),
+('00005', 'test test', 'test', 'tsett', '2023-01-19', 'single', 2, 'test', 'est', 2, 1, 3, '00004', 4);
 
 --
 -- Triggers `employee`
@@ -216,16 +249,9 @@ $$
 DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `TR_employee_create_leave_balance` AFTER INSERT ON `employee` FOR EACH ROW BEGIN
-DECLARE annual INT;
-DECLARE casual INT;
-DECLARE maternity INT;
-DECLARE no_pay INT;
-
-select annual,casual,maternity,no_pay  INTO annual,casual,maternity,no_pay FROM paygrade WHERE paygrade_id=NEW.paygrade_id;
-
-INSERT INTO leave_balance
-   ( emp_id, annual, casual, maternity, no_pay) VALUES
-   ( new.emp_id, @annual, @casual, @maternity, @no_pay );
+DECLARE a,c,m,n INT;
+SELECT annual,casual,maternity,no_pay INTO a,c,m,n FROM paygrade WHERE paygrade_id=new.paygrade_id;
+INSERT INTO leave_balance (emp_id,annual,casual,maternity,no_pay) VALUES (new.emp_id,a,c,m,n);
 END
 $$
 DELIMITER ;
@@ -245,6 +271,21 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `employee_by_department`
+-- (See below for the actual view)
+--
+CREATE TABLE `employee_by_department` (
+`dept_name` varchar(50)
+,`emp_id` varchar(5)
+,`first_name` varchar(50)
+,`full_name` varchar(255)
+,`job_title` varchar(100)
+,`last_name` varchar(50)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `emp_detail`
 --
 
@@ -252,18 +293,36 @@ CREATE TABLE `emp_detail` (
   `emp_id` varchar(5) NOT NULL,
   `nationality` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `blood_group` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `religion` varchar(255) DEFAULT NULL
+  `religion` varchar(255) DEFAULT NULL,
+  `date_joined` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `emp_detail`
 --
 
-INSERT INTO `emp_detail` (`emp_id`, `nationality`, `blood_group`, `religion`) VALUES
-('00001', NULL, NULL, NULL),
-('00002', NULL, NULL, NULL),
-('00003', NULL, NULL, NULL),
-('00004', NULL, NULL, NULL);
+INSERT INTO `emp_detail` (`emp_id`, `nationality`, `blood_group`, `religion`, `date_joined`) VALUES
+('00001', NULL, NULL, NULL, NULL),
+('00002', NULL, NULL, NULL, NULL),
+('00003', NULL, NULL, NULL, NULL),
+('00004', NULL, NULL, NULL, NULL),
+('00005', NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `leaves_by_department`
+-- (See below for the actual view)
+--
+CREATE TABLE `leaves_by_department` (
+`date` date
+,`dept_name` varchar(50)
+,`emp_id` varchar(5)
+,`first_name` varchar(50)
+,`full_name` varchar(255)
+,`last_name` varchar(50)
+,`leave_type` enum('annual','casual','no_pay','maternity')
+);
 
 -- --------------------------------------------------------
 
@@ -291,28 +350,28 @@ INSERT INTO `leave_application` (`leave_id`, `emp_id`, `leave_type`, `date`, `re
 -- Triggers `leave_application`
 --
 DELIMITER $$
-CREATE TRIGGER `TR_leave_application_update_leave_balance` AFTER UPDATE ON `leave_application` FOR EACH ROW BEGIN
-  IF new.status='approved' AND new.leave_type='annual' THEN
-           UPDATE leave_balance l
-           SET l.annual = l.annual-1
-           WHERE l.emp_id = new.emp_id;
-  END IF;
-  IF new.status='approved' AND new.leave_type='casual' THEN
-           UPDATE leave_balance l
-           SET l.casual = l.casual-1
-           WHERE l.emp_id = new.emp_id;
-  END IF;
-  IF new.status='approved' AND new.leave_type='maternity' THEN
-           UPDATE leave_balance l
-           SET l.maternity = l.maternity-1
-           WHERE l.emp_id = new.emp_id;
-  END IF;
-  IF new.status='approved' AND new.leave_type='no_pay' THEN
-           UPDATE leave_balance l
-           SET l.no_pay = l.no_pay-1
-           WHERE l.emp_id = new.emp_id;
-  END IF;
-END
+CREATE TRIGGER `TR_leave_application_update_leave_balance` AFTER UPDATE ON `leave_application` FOR EACH ROW begin
+  if new.status='approved' and new.leave_type='annual' then
+           update leave_balance l
+           set l.annual = l.annual-1
+           where l.emp_id = new.emp_id;
+  end if;
+  if new.status='approved' and new.leave_type='casual' then
+           update leave_balance l
+           set l.casual = l.casual-1
+           where l.emp_id = new.emp_id;
+  end if;
+  if new.status='approved' and new.leave_type='maternity' then
+           update leave_balance l
+           set l.maternity = l.maternity-1
+           where l.emp_id = new.emp_id;
+  end if;
+  if new.status='approved' and new.leave_type='no_pay' then
+           update leave_balance l
+           set l.no_pay = l.no_pay-1
+           where l.emp_id = new.emp_id;
+  end if;
+end
 $$
 DELIMITER ;
 
@@ -338,7 +397,8 @@ INSERT INTO `leave_balance` (`emp_id`, `annual`, `casual`, `maternity`, `no_pay`
 ('00001', 14, 12, 10, 50),
 ('00002', 14, 12, 10, 50),
 ('00003', 14, 12, 10, 50),
-('00004', 14, 12, 10, 50);
+('00004', 14, 12, 10, 50),
+('00005', 13, 14, 11, 51);
 
 -- --------------------------------------------------------
 
@@ -454,7 +514,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `emp_id`, `role`, `username`, `password`, `is_active`) VALUES
-(1, '00001', 'admin', 'admin', '$2b$10$m/AKAaGV7Q6iG/UflAWfdegk/.HROYPAveo219Peh6BbkxMOyEJWu', 1),
+(1, '00001', 'admin', 'admin', '$2b$10$FFSpnz/YpIY8VbVEjGkk1.UpbmJuUIdmJDgxmaksLogoJvKGBHg.W', 1),
 (2, '00004', 'user', 'user', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1),
 (3, '00003', 'manager', 'manager', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1),
 (39, '00001', 'user', 'test1', '$2b$10$hEp5rgHFRSwMKQzT3FR0rOGHZdttQtzq5.t7QYpH4h/88V/y001Tm', 1);
@@ -478,6 +538,24 @@ INSERT INTO `user_access` (`role`, `access_level`) VALUES
 ('admin', NULL),
 ('manager', NULL),
 ('user', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `employee_by_department`
+--
+DROP TABLE IF EXISTS `employee_by_department`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `employee_by_department`  AS SELECT `department`.`dept_name` AS `dept_name`, `employee`.`emp_id` AS `emp_id`, `employee`.`full_name` AS `full_name`, `employee`.`first_name` AS `first_name`, `employee`.`last_name` AS `last_name`, `title`.`job_title` AS `job_title` FROM (`title` left join (`department` join `employee` on((`department`.`dept_id` = `employee`.`dept_id`))) on((`employee`.`title_id` = `title`.`title_id`))) WHERE (`department`.`dept_name` is not null)  ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `leaves_by_department`
+--
+DROP TABLE IF EXISTS `leaves_by_department`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `leaves_by_department`  AS SELECT `department`.`dept_name` AS `dept_name`, `e`.`emp_id` AS `emp_id`, `e`.`full_name` AS `full_name`, `e`.`first_name` AS `first_name`, `e`.`last_name` AS `last_name`, `la`.`leave_type` AS `leave_type`, `la`.`date` AS `date` FROM (`leave_application` `la` left join (`employee` `e` join `department` on((`department`.`dept_id` = `e`.`dept_id`))) on((`e`.`emp_id` = `la`.`emp_id`))) WHERE (`department`.`dept_name` is not null)  ;
 
 --
 -- Indexes for dumped tables
@@ -617,7 +695,7 @@ ALTER TABLE `contract`
 -- AUTO_INCREMENT for table `custom_attribute`
 --
 ALTER TABLE `custom_attribute`
-  MODIFY `attr_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `attr_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `department`
