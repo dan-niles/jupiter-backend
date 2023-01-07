@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 07, 2023 at 02:40 AM
+-- Generation Time: Jan 07, 2023 at 02:54 AM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.0
 
@@ -48,9 +48,6 @@ END$$
 --
 -- Functions
 --
------------------------------------------------------
---- function for retrive the number of leave balances for the employees by types of leaves
------------------------------------------------------
 CREATE DEFINER=`root`@`localhost` FUNCTION `FN_no_of_leaves` (`id` VARCHAR(5), `typeOfLeave` VARCHAR(255)) RETURNS INT DETERMINISTIC COMMENT 'function to retrieve the number of leave balances for the employ' begin
     declare a int;
     set a=0;
@@ -236,7 +233,7 @@ INSERT INTO `employee` (`emp_id`, `full_name`, `first_name`, `last_name`, `birth
 ('00002', 'Dave Windler', 'Dave', 'Windler', '1997-11-19', 'married', 1, 'dave@jupiter.com', '9700046782678', 1, 1, 1, '00001', 4),
 ('00003', 'Darren John Bruen', 'Darren', 'Bruen', '1993-01-14', 'married', 2, 'darren@jupiter.com', '9600047882678', 1, 1, 6, '00002', 3),
 ('00004', 'Kurt Corwin', 'Kurt', 'Corwin', '1989-08-08', 'single', 1, 'kurt@jupiter.com', '9300047884448', 1, 1, 7, '00002', 3),
-('00005', 'test test', 'test', 'tsett', '2023-01-19', 'single', 2, 'test', 'est', 2, 1, 3, '00004', 4);
+('00005', 'test test', 'test', ' test', '2023-01-19', 'married', 1, 'test', 'est', 3, 1, 3, '00002', 4);
 
 --
 -- Triggers `employee`
@@ -251,7 +248,7 @@ DELIMITER $$
 CREATE TRIGGER `TR_employee_create_leave_balance` AFTER INSERT ON `employee` FOR EACH ROW BEGIN
 DECLARE a,c,m,n INT;
 SELECT annual,casual,maternity,no_pay INTO a,c,m,n FROM paygrade WHERE paygrade_id=new.paygrade_id;
-INSERT INTO leave_balance (emp_id,annual,casual,maternity,no_pay) VALUES (new.emp_id,a,c,m,n);
+INSERT INTO leave_balance (emp_id,year,annual,casual,maternity,no_pay) VALUES (new.emp_id,YEAR(CURDATE()),a,c,m,n);
 END
 $$
 DELIMITER ;
@@ -383,6 +380,7 @@ DELIMITER ;
 
 CREATE TABLE `leave_balance` (
   `emp_id` varchar(5) NOT NULL,
+  `year` year NOT NULL,
   `annual` int DEFAULT NULL,
   `casual` int DEFAULT NULL,
   `maternity` int DEFAULT NULL,
@@ -393,12 +391,12 @@ CREATE TABLE `leave_balance` (
 -- Dumping data for table `leave_balance`
 --
 
-INSERT INTO `leave_balance` (`emp_id`, `annual`, `casual`, `maternity`, `no_pay`) VALUES
-('00001', 14, 12, 10, 50),
-('00002', 14, 12, 10, 50),
-('00003', 14, 12, 10, 50),
-('00004', 14, 12, 10, 50),
-('00005', 13, 14, 11, 51);
+INSERT INTO `leave_balance` (`emp_id`, `year`, `annual`, `casual`, `maternity`, `no_pay`) VALUES
+('00001', 2022, 14, 12, 10, 50),
+('00002', 2022, 14, 12, 10, 50),
+('00003', 2022, 14, 12, 10, 50),
+('00004', 2022, 14, 12, 10, 50),
+('00005', 2023, 13, 14, 11, 51);
 
 -- --------------------------------------------------------
 
