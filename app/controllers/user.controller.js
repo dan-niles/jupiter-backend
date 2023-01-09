@@ -51,12 +51,16 @@ export const findOne = (req, res) => {
 
 // Retrieve all users from the database
 export const findAll = (req, res) => {
-	User.getAll((err, data) => {
+
+	const { user_id } = req.user
+
+
+	User.getAll(user_id, (err, data) => {
 		if (err)
 			res.status(500).send({
 				message: err.message || "Some error occurred while retrieving users",
 			});
-		else res.send(data);
+		return res.send(data);
 	});
 };
 
