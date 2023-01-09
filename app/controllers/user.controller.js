@@ -57,7 +57,7 @@ export const findAll = (req, res) => {
 
 	User.getAll(user_id, (err, data) => {
 		if (err)
-			res.status(500).send({
+			return res.status(500).send({
 				message: err.message || "Some error occurred while retrieving users",
 			});
 		return res.send(data);

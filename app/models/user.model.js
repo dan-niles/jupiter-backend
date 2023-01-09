@@ -45,18 +45,19 @@ class User {
 	// Retrieve users from the database
 	static getAll(user_id, handleDBResponse) {
 		connection.query(
-			`SELECT user.user_id, user.emp_id, user.role, user.username, user.is_active, employee.first_name, employee.last_name
-			FROM user INNER JOIN employee ON user.emp_id = employee.emp_id`,
-			(err, res) => {
-				if (err) {
-					console.log("error: ", err);
-					return result(null, err);
-				}
-
-				console.log("users: ", res);
-				result(null, res);
-			}
-		);
+			`SELECT
+			u.user_id,
+			u.emp_id,
+			u.role,
+			u.username,
+			u.is_active,
+			e.first_name,
+			e.last_name
+			FROM user u INNER JOIN employee e ON u.emp_id = e.emp_id
+			WHERE u.user_id != ? and u.role != 'admin'`,
+			[user_id],
+			handleDBResponse
+		)
 	}
 
 	static findById(user_id, result) {
