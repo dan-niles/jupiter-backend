@@ -6,9 +6,9 @@ const router = express.Router();
 router.route("/").get(status.findAll).post(status.create);
 
 router
-	.route("/:status_id")
-	.get(status.findOne)
-	.put(status.update)
-	.delete(status.remove);
+    .route("/:status_id")
+    .get(status.findOne)
+    .put(status.update)
+    .delete(status.remove);
 
 export default router;
