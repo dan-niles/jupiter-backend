@@ -1,29 +1,6 @@
 import connection from "../config/db.js";
 
-<<<<<<< HEAD
 class Title {
-	constructor(title_id, job_title) {
-		this.title_id = title_id;
-		this.job_title = job_title;
-	}
-
-	create(result) {
-		connection.query(
-			`INSERT INTO title(job_title)
-            VALUES (?)`,
-			[this.job_title],
-			(err, res) => {
-				if (err) {
-					console.log("error: ", err);
-					return result(err, null);
-				}
-				this.title_id = res.insertId;
-				result(null, { ...this });
-			}
-		);
-	}
-=======
-export default class Title {
     constructor(title_id, job_title) {
         this.title_id = title_id;
         this.job_title = job_title;
@@ -42,82 +19,19 @@ export default class Title {
                 this.title_id = res.insertId;
                 result(null, { ...this });
             }
-        )
+        );
     }
->>>>>>> 84bcc7b (leave controller created.)
-
-	static getAll(result) {
-		connection.query(`SELECT * FROM title`, (err, res) => {
-			if (err) {
-				console.log("error: ", err);
-				return result(err, null);
-			}
-
-			return result(null, res);
-		});
-	}
-
-	static getById(title_id, result) {
-		connection.query(
-			`SELECT * FROM title WHERE title_id = ${title_id}`,
-			(err, res) => {
-				if (err) {
-					console.log("error: ", err);
-					return result(err, null);
-				}
-				return result(null, res);
-			}
-		);
-	}
-
-<<<<<<< HEAD
-	updateById(result) {
-		connection.query(
-			`UPDATE title SET 
-            job_title = ?
-            WHERE title_id = ?`,
-			[this.job_title, this.title_id],
-			(err, res) => {
-				if (err) {
-					console.log("error: ", err);
-					return result(err, null);
-				}
-				return result(null, res);
-			}
-		);
-	}
-
-	static deleteById(title_id, result) {
-		connection.query(
-			`DELETE FROM title WHERE title_id = ${title_id}`,
-			(err, res) => {
-				if (err) {
-					console.log("error: ", err);
-					return result(err, null);
-				}
-				return result(null, res);
-			}
-		);
-	}
-}
-
-export default Title;
-=======
 
     static getAll(result) {
-        connection.query(
-            `SELECT * FROM title`,
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null);
-                }
-
-                return result(null, res)
+        connection.query(`SELECT * FROM title`, (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return result(err, null);
             }
-        )
-    }
 
+            return result(null, res);
+        });
+    }
 
     static getById(title_id, result) {
         connection.query(
@@ -125,11 +39,11 @@ export default Title;
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
-                    return result(err, null)
+                    return result(err, null);
                 }
-                return result(null, res)
+                return result(null, res);
             }
-        )
+        );
     }
 
     updateById(result) {
@@ -137,19 +51,15 @@ export default Title;
             `UPDATE title SET 
             job_title = ?
             WHERE title_id = ?`,
-            [
-                this.job_title,
-                this.title_id
-            ],
+            [this.job_title, this.title_id],
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
-                    return result(err, null)
+                    return result(err, null);
                 }
-                return result(null, res)
+                return result(null, res);
             }
-        )
-
+        );
     }
 
     static deleteById(title_id, result) {
@@ -158,12 +68,12 @@ export default Title;
             (err, res) => {
                 if (err) {
                     console.log("error: ", err);
-                    return result(err, null)
+                    return result(err, null);
                 }
-                return result(null, res)
+                return result(null, res);
             }
-        )
+        );
     }
-
 }
->>>>>>> 84bcc7b (leave controller created.)
+
+export default Title;

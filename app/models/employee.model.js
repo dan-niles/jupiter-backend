@@ -33,18 +33,10 @@ class Employee {
 		this.paygrade_id = paygrade_id;
 	}
 
-<<<<<<< HEAD
-	static getAll(result) {
-		connection.query(
-			`SELECT * FROM employee 
-			INNER JOIN title ON title.title_id=employee.emp_id
-			INNER JOIN department ON department.dept_id=employee.dept_id`,
-=======
 	static getAll(emp_id, result) {
 		connection.query(
 			`SELECT * FROM employee WHERE emp_id != ?`,
 			[emp_id],
->>>>>>> 84bcc7b (leave controller created.)
 			result
 		);
 	}

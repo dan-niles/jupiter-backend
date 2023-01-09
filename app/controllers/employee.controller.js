@@ -42,39 +42,40 @@ export default class EmployeeCtrl {
                 }
                 return res.send(result[0]);
             });
-        }
+        })
+    }
 
-	static async createNew(req, res) {
-            const emp = new Employee(req.body);
+    static async createNew(req, res) {
+        const emp = new Employee(req.body);
 
-            emp.create((err, result) => {
-                if (err) {
-                    console.log(err);
-                    switch (err.code) {
-                        case "ER_DUP_ENTRY":
-                            return res.status(403).send({
-                                error: "Given employee ID already exists.",
-                            });
-                        case "ER_NO_REFERENCED_ROW_2":
-                            return res.status(403).send({
-                                error: "Invalid values provided.",
-                            });
-                        default:
-                            return res.status(500).send({
-                                error: "something went wrong on our side.",
-                            });
-                    }
+        emp.create((err, result) => {
+            if (err) {
+                console.log(err);
+                switch (err.code) {
+                    case "ER_DUP_ENTRY":
+                        return res.status(403).send({
+                            error: "Given employee ID already exists.",
+                        });
+                    case "ER_NO_REFERENCED_ROW_2":
+                        return res.status(403).send({
+                            error: "Invalid values provided.",
+                        });
+                    default:
+                        return res.status(500).send({
+                            error: "something went wrong on our side.",
+                        });
                 }
+            }
 
-                res.send(result);
-                return;
-            });
-        }
+            res.send(result);
+            return;
+        });
+    }
 
-	static async updateOne(req, res) {
-            const emp = new Employee(req.body);
+    static async updateOne(req, res) {
+        const emp = new Employee(req.body);
 
-            if(emp.supervisor_id === "") {
+        if (emp.supervisor_id === "") {
             emp.supervisor_id = null;
         }
 
