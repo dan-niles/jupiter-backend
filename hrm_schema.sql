@@ -515,7 +515,11 @@ INSERT INTO `user` (`user_id`, `emp_id`, `role`, `username`, `password`, `is_act
 (1, '00001', 'admin', 'admin', '$2b$10$FFSpnz/YpIY8VbVEjGkk1.UpbmJuUIdmJDgxmaksLogoJvKGBHg.W', 1),
 (2, '00004', 'user', 'user', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1),
 (3, '00003', 'manager', 'manager', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1),
+<<<<<<< HEAD
 (39, '00001', 'user', 'test1', '$2b$10$hEp5rgHFRSwMKQzT3FR0rOGHZdttQtzq5.t7QYpH4h/88V/y001Tm', 1);
+=======
+(4, '00002', 'user', 'mushrafmim', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1);
+>>>>>>> 512d2a0 (schema updated with a supervisor)
 
 -- --------------------------------------------------------
 
@@ -524,8 +528,8 @@ INSERT INTO `user` (`user_id`, `emp_id`, `role`, `username`, `password`, `is_act
 --
 
 CREATE TABLE `user_access` (
-  `role` varchar(50) NOT NULL,
-  `access_level` varchar(50) DEFAULT NULL
+  `role` VARCHAR(50) NOT NULL,
+  `access_level` VARCHAR(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -747,7 +751,11 @@ ALTER TABLE `title`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
+<<<<<<< HEAD
   MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+=======
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+>>>>>>> 512d2a0 (schema updated with a supervisor)
 
 --
 -- Constraints for dumped tables
