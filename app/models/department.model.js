@@ -54,4 +54,8 @@ class Department {
 	}
 }
 
+<<<<<<< HEAD
 export default Department;
+=======
+
+>>>>>>> 84bcc7b (leave controller created.)

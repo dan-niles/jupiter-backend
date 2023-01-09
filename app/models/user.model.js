@@ -43,8 +43,9 @@ class User {
 	}
 
 	// Retrieve users from the database
-	static getAll(result) {
+	static getAll(user_id, handleDBResponse) {
 		connection.query(
+<<<<<<< HEAD
 			`SELECT user.user_id, user.emp_id, user.role, user.username, user.is_active, employee.first_name, employee.last_name
 			FROM user INNER JOIN employee ON user.emp_id = employee.emp_id`,
 			(err, res) => {
@@ -56,6 +57,21 @@ class User {
 				console.log("users: ", res);
 				result(null, res);
 			}
+=======
+			`SELECT
+				u.user_id,
+				u.emp_id,
+				u.role,
+				u.username,
+				u.is_active,
+				e.first_name,
+				e.last_name
+				FROM user u
+				INNER JOIN employee e ON u.emp_id = e.emp_id
+				WHERE user_id <> ?`,
+			[user_id],
+			handleDBResponse
+>>>>>>> 84bcc7b (leave controller created.)
 		);
 	}
 
@@ -87,10 +103,40 @@ class User {
 
 	static findByUsername(username, result) {
 		connection.query(
-			`SELECT * FROM user
-			INNER JOIN employee ON employee.emp_id = user.emp_id 
-			INNER JOIN title ON employee.title_id = title.title_id 
-			WHERE username = ?`,
+			`SELECT
+				e.emp_id,
+				e.full_name,
+				e.first_name,
+				e.last_name,
+				e.birthdate,
+				e.email,
+				e.nic,
+				e.marital_status,
+				e.dept_id,
+				e.contract_id,
+				e.status_id,
+				e.title_id,
+				d.dept_name,
+				u.user_id,
+				u.username,
+				u.password,
+				u.role,
+				t.job_title,
+				c.type contract_type,
+				s.type status_type,
+				e1.emp_id supervisor_id,
+				e1.full_name supervisor,
+				p.paygrade_id,
+				p.level paygrade
+				FROM user u
+			INNER JOIN employee e ON e.emp_id = u.emp_id
+			INNER JOIN title t ON e.title_id = t.title_id
+			INNER JOIN department d ON e.dept_id = d.dept_id
+			INNER JOIN contract c ON c.contract_id = e.contract_id
+			INNER JOIN status s ON s.status_id = e.status_id
+			INNER JOIN paygrade p ON p.paygrade_id = e.paygrade_id
+			LEFT OUTER JOIN employee e1 ON e.supervisor_id = e1.emp_id
+			WHERE u.username = ?`,
 			[username],
 			(err, res) => {
 				if (err) {
@@ -100,11 +146,9 @@ class User {
 				}
 
 				if (res.length) {
-					console.log(res);
 					result(null, res[0]);
 					return;
 				}
-
 				// not found user with the user_id
 				result({ kind: "not_found" }, null);
 			}
