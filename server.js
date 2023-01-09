@@ -12,9 +12,10 @@ import customAttrRoutes from "./app/routes/custom_attributes.routes.js";
 import paygradeRoutes from "./app/routes/paygrade.routes.js";
 import branchRoutes from "./app/routes/branch.routes.js";
 import departmentRoutes from "./app/routes/department.routes.js";
-import contractRoutes from "./app/routes/contract.routes.js";
-import statusRoutes from "./app/routes/status.routes.js";
-import titleRoutes from "./app/routes/title.routes.js";
+import contractRoutes from "./app/routes/contract.routes.js"
+import leaveRoutes from "./app/routes/leave.routes.js"
+import titleRoutes from "./app/routes/title.routes.js"
+import statusRoutes from "./app/routes/status.routes.js"
 
 const app = express();
 
@@ -33,7 +34,7 @@ app.get("/", (req, res) => {
 app.use("/api/login", loginRoutes);
 
 // Using authentication for the below
-// app.use(validateToken);
+app.use(validateToken);
 
 // Initializaing routes
 app.use("/api/user", userRoutes);
@@ -43,10 +44,11 @@ app.use("/api/custom_attributes", customAttrRoutes);
 app.use("/api/paygrade", paygradeRoutes);
 app.use("/api/branch", branchRoutes);
 app.use("/api/department", departmentRoutes);
-app.use("/api/employee", employeeRoutes);
-app.use("/api/contract", contractRoutes);
-app.use("/api/status", statusRoutes);
-app.use("/api/title", titleRoutes);
+app.use("/api/employee", employeeRoutes)
+app.use("/api/contract", contractRoutes)
+app.use("/api/leave", leaveRoutes)
+app.use("/api/title", titleRoutes)
+app.use("/api/status", statusRoutes)
 
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}.`);
