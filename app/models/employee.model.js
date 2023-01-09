@@ -1,6 +1,6 @@
 import connection from "../config/db.js";
 
-class Employee {
+export default class Employee {
 	constructor({
 		emp_id,
 		full_name,
@@ -35,7 +35,7 @@ class Employee {
 
 	static getAll(emp_id, result) {
 		connection.query(
-			`SELECT * FROM employee WHERE emp_id != ?`,
+			`SELECT * FROM employee WHERE emp_id != ? and emp_id != '00001'`,
 			[emp_id],
 			result
 		);
@@ -138,5 +138,3 @@ class Employee {
 		connection.query(`DELETE FROM employee WHERE emp_id = ?`, [emp_id], result);
 	}
 }
-
-export default Employee;

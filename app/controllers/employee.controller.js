@@ -1,8 +1,13 @@
 import Employee from "../models/employee.model.js";
 
 export default class EmployeeCtrl {
+
+
     static async getAll(req, res) {
-        Employee.getAll((err, result) => {
+
+        const { emp_id } = req.user;
+
+        Employee.getAll(emp_id, (err, result) => {
             if (err) {
                 console.log(err);
                 return res.status(500).send({
@@ -16,9 +21,9 @@ export default class EmployeeCtrl {
 
     static async findById(req, res) {
 
-        const { emp_id } = req.user
+        const { id } = req.params
 
-        Employee.getAll(emp_id, (err, result) => {
+        Employee.getById(id, (err, result) => {
             if (err) {
                 console.log(err)
                 return res
@@ -28,20 +33,7 @@ export default class EmployeeCtrl {
                     })
             }
 
-            Employee.getById(emp_id, (err, result) => {
-                if (err) {
-                    return res.status(500).send({
-                        error: "Something went wrong on our side.",
-                    });
-                }
-
-                if (result.length === 0) {
-                    return res.status(404).send({
-                        error: "Given Employee ID does not exists.",
-                    });
-                }
-                return res.send(result[0]);
-            });
+            return res.send(result)
         })
     }
 

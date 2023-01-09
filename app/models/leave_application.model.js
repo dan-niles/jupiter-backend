@@ -1,16 +1,6 @@
 import connection from "../config/db.js";
 
-class LeaveApplication {
-<<<<<<< HEAD
-	constructor({ leave_id, emp_id, leave_type, date, reason, status }) {
-		this.leave_id = leave_id;
-		this.emp_id = emp_id;
-		this.leave_type = leave_type;
-		this.date = date;
-		this.reason = reason;
-		this.status = status;
-	}
-=======
+export default class LeaveApplication {
     constructor({
         leave_id,
         emp_id,
@@ -26,33 +16,11 @@ class LeaveApplication {
         this.reason = reason;
         this.status = status;
     }
->>>>>>> 84bcc7b (leave controller created.)
 
-	static getAll(result) {
-		connection.query(`SELECT * FROM leave_application`, result);
-	}
+    static getAll(result) {
+        connection.query(`SELECT * FROM leave_application`, result);
+    }
 
-<<<<<<< HEAD
-	static getById(leave_id, result) {
-		connection.query(
-			`SELECT * FROM leave_application WHERE leave_id = ?`,
-			[leave_id],
-			result
-		);
-	}
-
-	static getByEmployeeID(emp_id, result) {
-		connection.query(
-			`SELECT * FROM leave_application WHERE emp_id = ?`,
-			[emp_id],
-			result
-		);
-	}
-
-	create(result) {
-		connection.query(
-			`INSERT INTO leave_application
-=======
     static getById(leave_id, result) {
         connection.query(
             `SELECT * FROM leave_application WHERE leave_id = ?`,
@@ -82,7 +50,6 @@ emp_id = l.emp_id WHERE supervisor_id = ? ORDER BY date`,
     create(handleDBResponse) {
         connection.query(
             `INSERT INTO leave_application
->>>>>>> 84bcc7b (leave controller created.)
             (
                 emp_id,
                 leave_type,
@@ -91,20 +58,6 @@ emp_id = l.emp_id WHERE supervisor_id = ? ORDER BY date`,
                 status
             )
             VALUES
-<<<<<<< HEAD
-            (?,?,?,?,?,? )`,
-			[
-				this.leave_id,
-				this.emp_id,
-				this.leave_type,
-				this.date,
-				this.reason,
-				this.status,
-			],
-			result
-		);
-	}
-=======
             (?,?,?,?,? )`,
             [
                 this.emp_id,
@@ -128,11 +81,10 @@ emp_id = l.emp_id WHERE supervisor_id = ? ORDER BY date`,
             handleDBResponse
         )
     }
->>>>>>> 84bcc7b (leave controller created.)
 
-	update(result) {
-		connection.query(
-			`UPDATE leave_application
+    update(result) {
+        connection.query(
+            `UPDATE leave_application
             SET
                 leave_id = ?,
                 emp_id = ?,
@@ -141,27 +93,18 @@ emp_id = l.emp_id WHERE supervisor_id = ? ORDER BY date`,
                 reason = ?,
                 status = ?
             WHERE leave_id = ?`,
-			[
-				this.leave_id,
-				this.emp_id,
-				this.leave_type,
-				this.date,
-				this.reason,
-				this.status,
-			],
-			result
-		);
-	}
+            [
+                this.leave_id,
+                this.emp_id,
+                this.leave_type,
+                this.date,
+                this.reason,
+                this.status,
+            ],
+            result
+        );
+    }
 
-<<<<<<< HEAD
-	delete(result) {
-		connection.query(
-			`DELETE FROM leave_application WHERE leave_id = ?`,
-			[this.leave_id],
-			result
-		);
-	}
-=======
     static delete(leave_id, emp_id, result) {
         connection.query(
             `DELETE FROM leave_application WHERE leave_id = ? and emp_id = ?`,
@@ -169,7 +112,4 @@ emp_id = l.emp_id WHERE supervisor_id = ? ORDER BY date`,
             result
         )
     }
->>>>>>> 84bcc7b (leave controller created.)
 }
-
-export default LeaveApplication;
