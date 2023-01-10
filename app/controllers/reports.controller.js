@@ -13,3 +13,17 @@ export const fetchEmployeesByDepartment = (req, res) => {
 		return res.send(result);
 	});
 };
+
+// Retrieve leaves based on the given department and leave type
+export const fetchLeavesByDepartment = (req, res) => {
+	const { dept_name, leave_type } = req.body;
+
+	Reports.getLeavesByDepartment(dept_name, leave_type, (err, result) => {
+		if (err) {
+			console.log(err);
+			return res.status(500).send({ error: "Error retrieving records." });
+		}
+
+		return res.send(result);
+	});
+};
