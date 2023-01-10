@@ -75,6 +75,22 @@ class LeaveBalance {
 			result
 		);
 	}
+
+	static async getCount(emp_id, leave_type, result) {
+		connection.query(
+			"SELECT `FN_no_of_leaves`(?, ?) AS `FN_no_of_leaves`;",
+			[emp_id, leave_type],
+			result
+		);
+	}
+
+	static async getTotal(emp_id, leave_type, result) {
+		connection.query(
+			"SELECT `FN_alloc_leaves`(?, ?) AS `FN_alloc_leaves`;",
+			[emp_id, leave_type],
+			result
+		);
+	}
 }
 
 export default LeaveBalance;

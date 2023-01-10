@@ -1,107 +1,133 @@
 import { format } from "date-fns";
 import LeaveApplication from "../models/leave_application.model.js";
+import LeaveBalance from "../models/leave_balance.model.js";
+import User from "../models/user.model.js";
 
 export default class LeaveCtrl {
+	static async getAllLeavesByUser(req, res) {
+		const emp_id = req.user.emp_id;
 
-    static async getAllLeavesByUser(req, res) {
+		LeaveApplication.getByEmployeeID(emp_id, (err, result) => {
+			if (err) {
+				return res
+					.status(500)
+					.send({ error: "Something went wrong on our side." });
+			}
+			return res.send(
+				result.map((leave) => ({
+					...leave,
+					date: format(leave.date, "yyyy-MM-dd"),
+				}))
+			);
+		});
+	}
 
-        const emp_id = req.user.emp_id
+	static async getLeavesToReviewBySupervisor(req, res) {
+		// Grabbing the supervisor id from the decoded token.
+		const supervisor_id = req.user.emp_id;
 
-        LeaveApplication.getByEmployeeID(emp_id, (err, result) => {
-            if (err) {
-                return res.status(500).send({ error: "Something went wrong on our side." })
-            }
-            return res.send(result.map((leave) =>
-                ({ ...leave, date: format(leave.date, "yyyy-MM-dd") })))
-        })
-    }
+		LeaveApplication.getBySupervisorId(supervisor_id, (err, result) => {
+			if (err) {
+				console.log(err);
+			}
 
+			return res.send(
+				result.map((leave) => ({
+					...leave,
+					date: format(leave.date, "yyyy-MM-dd"),
+				}))
+			);
+		});
+	}
 
-    static async getLeavesToReviewBySupervisor(req, res) {
+	static async applyLeave(req, res) {
+		const emp_id = req.user.emp_id;
 
-        // Grabbing the supervisor id from the decoded token.
-        const supervisor_id = req.user.emp_id
+		let { startDate, endDate } = req.body;
 
-        LeaveApplication.getBySupervisorId(supervisor_id, (err, result) => {
-            if (err) {
-                console.log(err)
-            }
+		startDate = new Date(startDate);
+		endDate = new Date(endDate);
 
-            return res.send(result.map((leave) =>
-                ({ ...leave, date: format(leave.date, "yyyy-MM-dd") })))
-        })
-    }
+		while (startDate.getTime() <= endDate.getTime()) {
+			// Looping through dates skipping sunday.
+			if (startDate.getDay() !== 0) {
+				const date_formatted = format(startDate, "yyyy-MM-dd");
 
+				const application = new LeaveApplication({
+					date: date_formatted,
+					...req.body,
+					emp_id,
+					status: "pending",
+				});
 
-    static async applyLeave(req, res) {
+				application.create((err, result) => {
+					if (err) {
+						if (err) console.log(err);
+					}
+					console.log(result);
+				});
+			}
 
-        const emp_id = req.user.emp_id
+			startDate.setDate(startDate.getDate() + 1);
+		}
 
-        let { startDate, endDate } = req.body
+		return res.send({ status: "Successfully created leave entries.!" });
+	}
 
-        startDate = new Date(startDate)
-        endDate = new Date(endDate)
+	static async reviewLeave(req, res) {
+		const { leave_id, action } = req.body;
 
+		LeaveApplication.takeAction(leave_id, action, (err, result) => {
+			if (err) {
+				return res
+					.status(500)
+					.send({ error: "something went wrong on our side." });
+			}
 
-        while (startDate.getTime() <= endDate.getTime()) {
+			return res.send(result);
+		});
+	}
 
-            // Looping through dates skipping sunday.
-            if (startDate.getDay() !== 0) {
+	static async deleteLeave(req, res) {
+		console.log(req.params);
+		const leave_id = req.params.id;
+		const emp_id = req.user.emp_id;
 
+		LeaveApplication.delete(leave_id, emp_id, (err, result) => {
+			if (err) {
+				console.log(err);
+				return res
+					.status(500)
+					.send({ error: "Something went wrong on our side." });
+			}
 
+			return res.send(result);
+		});
+	}
 
-                const date_formatted = format(startDate, 'yyyy-MM-dd')
+	static async getLeaveBalance(req, res) {
+		const { emp_id, leave_type } = req.body;
 
+		LeaveBalance.getCount(emp_id, leave_type, (err, result) => {
+			if (err) {
+				console.log(err);
+				return res.status(500).send({ error: "Error retrieving leave count." });
+			}
 
-                const application = new LeaveApplication({
-                    date: date_formatted,
-                    ...req.body,
-                    emp_id,
-                    status: 'pending'
-                })
+			return res.send(result);
+		});
+	}
 
-                application.create((err, result) => {
-                    if (err) {
-                        if (err) console.log(err)
-                    }
-                    console.log(result)
-                })
+	static async getAllocatedLeaves(req, res) {
+		const { emp_id, leave_type } = req.body;
 
-            }
+		LeaveBalance.getTotal(emp_id, leave_type, (err, result) => {
+			if (err) {
+				console.log(err);
+				return res.status(500).send({ error: "Error retrieving leave count." });
+			}
 
-            startDate.setDate(startDate.getDate() + 1)
-        }
-
-        return res.send({ status: "Successfully created leave entries.!" })
-    }
-
-
-    static async reviewLeave(req, res) {
-
-        const { leave_id, action } = req.body
-
-        LeaveApplication.takeAction(leave_id, action, (err, result) => {
-            if (err) {
-                return res.status(500).send({ error: "something went wrong on our side." })
-            }
-
-            return res.send(result)
-        })
-    }
-
-    static async deleteLeave(req, res) {
-        console.log(req.params)
-        const leave_id = req.params.id
-        const emp_id = req.user.emp_id
-
-
-        LeaveApplication.delete(leave_id, emp_id, (err, result) => {
-            if (err) {
-                console.log(err)
-                return res.status(500).send({ error: "Something went wrong on our side." })
-            }
-
-            return res.send(result)
-        })
-    }
-};
+			return res.send(result);
+		});
+	}
+}
