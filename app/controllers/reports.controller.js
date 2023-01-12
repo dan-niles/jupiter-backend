@@ -41,3 +41,19 @@ export const fetchGroupedInfo = (req, res) => {
 		return res.send(result);
 	});
 };
+
+// Retrieve employee info with custom attributes
+export const fetchCustomReportRecords = (req, res) => {
+	const { options, dept_name } = req.body;
+
+	console.log("testsdfsdfsdfds ------- ", options);
+
+	Reports.getCustomReportRecords(options, dept_name, (err, result) => {
+		if (err) {
+			console.log(err);
+			return res.status(500).send({ error: "Error retrieving records." });
+		}
+
+		return res.send(result);
+	});
+};

@@ -59,6 +59,8 @@ class Reports {
             ORDER BY dept_name`;
 		}
 
+		console.log("query: ", query);
+
 		connection.query(query, [dept_name], result);
 	}
 }
