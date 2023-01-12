@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.route("/emp-by-department").post(reports.fetchEmployeesByDepartment);
 router.route("/leaves-by-department").post(reports.fetchLeavesByDepartment);
+router.route("/leave-balance").post(reports.fetchLeaveBalances);
 router.route("/grouped-emp").post(reports.fetchGroupedInfo);
 router.route("/custom-report").post(reports.fetchCustomReportRecords);
 

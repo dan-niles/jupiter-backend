@@ -31,6 +31,17 @@ class Reports {
 		connection.query(query, parameters, result);
 	}
 
+	static async getLeaveBalance(dept_name, result) {
+		let query;
+		if (dept_name == null) {
+			query = `SELECT * FROM leave_balance_info ORDER BY dept_name`;
+		} else {
+			query = `SELECT * FROM leave_balance_info WHERE dept_name = ?`;
+		}
+
+		connection.query(query, [dept_name], result);
+	}
+
 	static async getGroupedInfo(key, result) {
 		let query;
 		if (key === "Job Title") {

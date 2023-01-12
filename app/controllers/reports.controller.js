@@ -28,6 +28,20 @@ export const fetchLeavesByDepartment = (req, res) => {
 	});
 };
 
+// Retrieve leave balances based on the given department
+export const fetchLeaveBalances = (req, res) => {
+	const { dept_name } = req.body;
+
+	Reports.getLeaveBalance(dept_name, (err, result) => {
+		if (err) {
+			console.log(err);
+			return res.status(500).send({ error: "Error retrieving records." });
+		}
+
+		return res.send(result);
+	});
+};
+
 // Retrieve employee info based on the given key
 export const fetchGroupedInfo = (req, res) => {
 	const { key } = req.body;
