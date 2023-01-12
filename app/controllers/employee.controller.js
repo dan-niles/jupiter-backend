@@ -45,6 +45,9 @@ export default class EmployeeCtrl {
 	static async createNew(req, res) {
 		const emp = new Employee(req.body);
 
+		const { emp_id } = req.body;
+		const { custom_attributes } = req.body;
+
 		emp.create((err, result) => {
 			if (err) {
 				console.log(err);
@@ -64,6 +67,10 @@ export default class EmployeeCtrl {
 				}
 			}
 
+			for (const column in custom_attributes) {
+				Employee.updateEmpDetail(emp_id, column, custom_attributes[column]);
+			}
+
 			res.send(result);
 			return;
 		});
@@ -71,6 +78,8 @@ export default class EmployeeCtrl {
 
 	static async updateOne(req, res) {
 		const emp = new Employee(req.body);
+		const { emp_id } = req.body;
+		const { custom_attributes } = req.body;
 
 		if (emp.supervisor_id === "") {
 			emp.supervisor_id = null;
@@ -93,6 +102,10 @@ export default class EmployeeCtrl {
 							error: "something went wrong on our side.",
 						});
 				}
+			}
+
+			for (const column in custom_attributes) {
+				Employee.updateEmpDetail(emp_id, column, custom_attributes[column]);
 			}
 
 			res.send(result);

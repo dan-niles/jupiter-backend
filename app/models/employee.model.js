@@ -136,6 +136,14 @@ export default class Employee {
 		);
 	}
 
+	static updateEmpDetail(emp_id, column, value, result) {
+		connection.query(
+			`UPDATE emp_detail SET ${column} = ? WHERE emp_id = ?`,
+			[value, emp_id],
+			result
+		);
+	}
+
 	static remove(emp_id, result) {
 		connection.query(`DELETE FROM employee WHERE emp_id = ?`, [emp_id], result);
 	}
