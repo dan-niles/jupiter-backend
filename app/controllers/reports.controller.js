@@ -27,3 +27,17 @@ export const fetchLeavesByDepartment = (req, res) => {
 		return res.send(result);
 	});
 };
+
+// Retrieve employee info based on the given key
+export const fetchGroupedInfo = (req, res) => {
+	const { key } = req.body;
+
+	Reports.getGroupedInfo(key, (err, result) => {
+		if (err) {
+			console.log(err);
+			return res.status(500).send({ error: "Error retrieving records." });
+		}
+
+		return res.send(result);
+	});
+};
