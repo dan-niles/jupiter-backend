@@ -43,7 +43,11 @@ class CustomAttributes {
 		);
 
 		// Call procedure to add new column to employee_details table
-		connection.query(`CALL PR_add_emp_detail (?)`, [this.attr_name], result);
+		connection.query(
+			`CALL PR_add_emp_detail (?,?)`,
+			[this.attr_name, this.data_type],
+			result
+		);
 	}
 
 	update(result) {
