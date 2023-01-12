@@ -10,4 +10,7 @@ router
 	.get(EmployeeCtrl.findById)
 	.delete(EmployeeCtrl.deleteOne)
 	.put(EmployeeCtrl.updateOne);
+
+router.route("/department/:dept_id").get(EmployeeCtrl.getByDepartment);
+
 export default router;

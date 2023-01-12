@@ -13,6 +13,20 @@ export default class EmployeeCtrl {
 		});
 	}
 
+	static async getByDepartment(req, res) {
+		const { dept_id } = req.params;
+
+		Employee.getByDepartmentID(dept_id, (err, result) => {
+			if (err) {
+				return res.status(500).send({
+					error: "Something went wrong on our side.",
+				});
+			}
+
+			return res.send(result);
+		});
+	}
+
 	static async findById(req, res) {
 		const { id } = req.params;
 
