@@ -40,7 +40,8 @@ class Paygrade {
 
 	static getById(paygrade_id, result) {
 		connection.query(
-			`SELECT * FROM paygrade WHERE paygrade_id = ${paygrade_id}`,
+			`SELECT * FROM paygrade WHERE paygrade_id = ?`,
+			[paygrade_id],
 			(err, res) => {
 				if (err) {
 					console.log("error: ", err);

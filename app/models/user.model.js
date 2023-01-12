@@ -43,7 +43,7 @@ class User {
 	}
 
 	// Retrieve users from the database
-	static getAll(user_id, handleDBResponse) {
+	static getAll(result) {
 		connection.query(
 			`SELECT
 			u.user_id,
@@ -53,11 +53,9 @@ class User {
 			u.is_active,
 			e.first_name,
 			e.last_name
-			FROM user u INNER JOIN employee e ON u.emp_id = e.emp_id
-			WHERE u.user_id != ? and u.role != 'admin'`,
-			[user_id],
-			handleDBResponse
-		)
+			FROM user u INNER JOIN employee e ON u.emp_id = e.emp_id`,
+			result
+		);
 	}
 
 	static findById(user_id, result) {

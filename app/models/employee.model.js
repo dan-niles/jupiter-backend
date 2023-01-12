@@ -33,10 +33,12 @@ export default class Employee {
 		this.paygrade_id = paygrade_id;
 	}
 
-	static getAll(emp_id, result) {
+	static getAll(result) {
 		connection.query(
-			`SELECT * FROM employee WHERE emp_id != ? and emp_id != '00001'`,
-			[emp_id],
+			`SELECT * FROM employee 
+			INNER JOIN department ON department.dept_id=employee.dept_id
+			INNER JOIN title ON title.title_id=employee.title_id
+			`,
 			result
 		);
 	}
