@@ -35,15 +35,24 @@ export default class Branch {
 	}
 
 	updateById(handleDBResponse) {
+		// console.log(this);
 		connection.query(
 			`UPDATE branch SET 
-                branch_name = ?
-                country = ?
+				branch_name = ?,
+                country = ?,
                 address = ?
                 WHERE branch_id = ?
             `,
 			[this.branch_name, this.country, this.address, this.branch_id],
 			handleDBResponse
+		);
+	}
+
+	static remove(branch_id, result) {
+		connection.query(
+			`DELETE FROM branch WHERE branch_id = ?`,
+			[branch_id],
+			result
 		);
 	}
 }

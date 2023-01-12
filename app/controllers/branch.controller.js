@@ -9,12 +9,20 @@ export const create = (req, res) => {
 		});
 	}
 
+	console.log(req.body.data);
+
 	// Create a branch object
-	const branch = new Branch({ ...req.body.data });
+	const branch = new Branch(
+		null,
+		req.body.data.branch_name,
+		req.body.data.address,
+		req.body.data.country
+	);
 
 	// Save branch in the database
 	branch.create((err, data) => {
 		if (err) {
+			console.log(err);
 			res.status(500).send({
 				message: err.message || "Some error occurred while creating the branch",
 			});
@@ -59,13 +67,21 @@ export const update = (req, res) => {
 			message: "Content can not be empty!",
 		});
 	}
+	req.body.data;
+	const branch = new Branch(
+		req.body.data.branch_id,
+		req.body.data.branch_name,
+		req.body.data.address,
+		req.body.data.country
+	);
 
-	const branch = new Branch(req.body.data);
+	console.log(branch);
 
-	branch.branch_id = req.params.branch_id;
+	// branch.branch_id = req.params.branch_id;
 
 	branch.updateById((err, data) => {
 		if (err) {
+			console.log(err);
 			if (err.kind === "not_found") {
 				res.status(404).send({
 					message: `No branch level found with branch_id ${req.params.branch_id}`,
@@ -85,6 +101,7 @@ export const update = (req, res) => {
 export const remove = (req, res) => {
 	Branch.remove(req.params.branch_id, (err, data) => {
 		if (err) {
+			console.log(err);
 			if (err.kind === "not_found") {
 				res.status(404).send({
 					message: `No branch found with branch_id ${req.params.branch_id}`,
