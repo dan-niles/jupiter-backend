@@ -810,6 +810,164 @@ ALTER TABLE `user`
   ADD CONSTRAINT `user_ibfk_2` FOREIGN KEY (`role`) REFERENCES `user_access` (`role`);
 COMMIT;
 
+<<<<<<< HEAD:hrm_schema.sql
+=======
+
+
+
+
+--------------------------------------------------
+--Create triggers for updating leave balances after a leave is approved by supervisor
+--------------------------------------------------
+
+
+delimiter $$
+create trigger update_leaveBalances_trigger
+after update on leave_application
+for each row
+begin
+  if new.status='approved' and new.leave_type='annual' then
+           update leave_balance l
+           set l.annual = l.annual-1
+           where l.emp_id = new.emp_id;
+  end if;
+  if new.status='approved' and new.leave_type='casual' then
+           update leave_balance l
+           set l.casual = l.casual-1
+           where l.emp_id = new.emp_id;
+  end if;
+  if new.status='approved' and new.leave_type='maternity' then
+           update leave_balance l
+           set l.maternity = l.maternity-1
+           where l.emp_id = new.emp_id;
+  end if;
+  if new.status='approved' and new.leave_type='no_pay' then
+           update leave_balance l
+           set l.no_pay = l.no_pay-1
+           where l.emp_id = new.emp_id;
+  end if;
+end;
+$$
+
+
+--------------------------------------------------
+-- retrive the employee details by department
+--------------------------------------------------
+
+create procedure employee_of(name varchar(100))
+begin
+   select emp_id,full_name from employee where dept_id in(select dept_id from department where dept_name = name);
+
+end
+$$
+
+
+-----------------------------------------------------
+--- function for retrive the number of leave balances for the employees by types of leaves
+-----------------------------------------------------
+
+create function noOfLeave(id varchar(5) , typeOfLeave varchar(255) )
+returns int
+deterministic
+begin
+    declare a int;
+    set a=0;
+    if typeOfLeave = 'annual' then
+           select annual    into a from leave_balance where emp_id=id;
+    end if;
+    if typeOfLeave = 'casual' then
+           select casual    into a from leave_balance where emp_id=id;
+    end if;
+    if typeOfLeave = 'maternity' then
+           select maternity into a from leave_balance where emp_id=id;
+    end if;
+    if typeOfLeave = 'no_pay' then
+           select no_pay    into a from leave_balance where emp_id=id;
+    end if;
+      
+    return a;
+end;
+$$
+
+--
+-- procedure for create new column in emp_detail table
+--
+
+CREATE PROCEDURE update_emp_detail(column_name varchar(255))
+BEGIN
+    SET @STMT = CONCAT("alter table emp_detail add column ", column_name, " varchar(255) ");
+    PREPARE emp FROM @STMT;
+    EXECUTE emp;
+    DEALLOCATE PREPARE emp;
+END;
+$$
+
+--
+-- procedure for delete a column in emp_detail table
+--
+
+CREATE PROCEDURE u_emp_detail(column_name varchar(255) )
+BEGIN
+    SET @STMT = CONCAT("alter table emp_detail drop column ", column_name);
+    PREPARE emp_d FROM @STMT;
+    EXECUTE emp_d;
+    DEALLOCATE PREPARE emp_d;
+END;
+$$
+
+
+--
+-- views used for showing employee by department
+--
+create view employee_by_department 
+as 
+select 
+  dept_name, 
+  emp_id, 
+  full_name, 
+  job_title 
+from 
+  department 
+inner join 
+  employee on department.dept_id=employee.dept_id 
+right join  
+  title on employee.title_id=title.title_id 
+where dept_name is not null;
+
+--
+-- views used for showing leaves by department
+--
+
+create view leaves_by_department 
+as 
+select 
+  dept_name, 
+  e.emp_id, 
+  full_name, 
+  leave_type, 
+  date 
+from 
+  employee  as e 
+inner join 
+department on department.dept_id=e.dept_id 
+right join  
+  leave_application as la on e.emp_id=la.emp_id 
+where dept_name is not null ;
+
+
+>>>>>>> fc33eab27cd046464979b4cc96f076196d84e07e:hr_system_schema.sql
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+
+
+
+
+
+
+
+
+
+
