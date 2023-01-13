@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 12, 2023 at 11:32 AM
+-- Generation Time: Jan 13, 2023 at 07:27 AM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.0
 
@@ -30,8 +30,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `PR_add_emp_detail` (IN `column_name
         SET @STMT = CONCAT("ALTER TABLE emp_detail ADD COLUMN ", column_name, " VARCHAR(255)");
     ELSEIF data_type = 'INT' THEN
         SET @STMT = CONCAT("ALTER TABLE emp_detail ADD COLUMN ", column_name, " INT");
-    ELSEIF data_type = 'DATE' THEN
-        SET @STMT = CONCAT("ALTER TABLE emp_detail ADD COLUMN ", column_name, " DATE");
     END IF;
     PREPARE emp FROM @STMT;
     EXECUTE emp;
@@ -43,6 +41,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `PR_delete_emp_detail` (IN `column_n
     PREPARE emp_d FROM @STMT;
     EXECUTE emp_d;
     DEALLOCATE PREPARE emp_d;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PR_no_of_records` (IN `table_name` VARCHAR(100))   BEGIN
+    DECLARE a INT;
+    SET @STMT = CONCAT("select count(*)  from ", table_name);
+    PREPARE a FROM @STMT;
+    EXECUTE a;
+   
 END$$
 
 --
@@ -141,7 +147,7 @@ CREATE TABLE `custom_attribute` (
   `attr_id` int NOT NULL,
   `attr_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `alias` varchar(255) NOT NULL,
-  `data_type` enum('VARCHAR','INT','DATE') NOT NULL
+  `data_type` enum('VARCHAR','INT') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -152,7 +158,7 @@ INSERT INTO `custom_attribute` (`attr_id`, `attr_name`, `alias`, `data_type`) VA
 (1, 'nationality', 'Nationality', 'VARCHAR'),
 (2, 'blood_group', 'Blood Group', 'VARCHAR'),
 (3, 'religion', 'Religion', 'VARCHAR'),
-(9, 'date_joined', 'Date Joined', 'DATE');
+(9, 'home_town', 'Hometown', 'VARCHAR');
 
 -- --------------------------------------------------------
 
@@ -196,7 +202,9 @@ CREATE TABLE `dependant` (
 --
 
 INSERT INTO `dependant` (`dep_id`, `emp_id`, `dep_name`, `dep_birthdate`, `relationship_to_emp`) VALUES
-(1, '00001', 'Mushraf', '2022-11-18', 'Brother');
+(1, '00001', 'James', '2022-11-19', 'Brother'),
+(8, '00001', 'Jack', '2023-01-18', 'Brother'),
+(9, '00002', 'David', '2006-01-11', 'Father');
 
 -- --------------------------------------------------------
 
@@ -209,16 +217,17 @@ CREATE TABLE `emergency_contact` (
   `emp_id` varchar(5) NOT NULL,
   `contact_name` varchar(255) NOT NULL,
   `phone_no` varchar(15) DEFAULT NULL,
-  `address` varchar(255) DEFAULT NULL,
-  `relationship_to_emp` varchar(50) DEFAULT NULL
+  `address` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `emergency_contact`
 --
 
-INSERT INTO `emergency_contact` (`emergency_contact_id`, `emp_id`, `contact_name`, `phone_no`, `address`, `relationship_to_emp`) VALUES
-(1, '00001', 'Mushraf', '947736723456', '56 Temple Road, Mount Lavinia, Colombo', 'Brother');
+INSERT INTO `emergency_contact` (`emergency_contact_id`, `emp_id`, `contact_name`, `phone_no`, `address`) VALUES
+(1, '00001', 'James', '947736723456', '56 Temple Road, Mount Lavinia, Colombo'),
+(4, '00001', 'Jack', '947733242343', '56 Temple Road, Mount Lavinia, Colombo'),
+(5, '00002', 'David', '94767873465', '28, Galle Road, Wellawate, Colombo');
 
 -- --------------------------------------------------------
 
@@ -271,6 +280,18 @@ END
 $$
 DELIMITER ;
 DELIMITER $$
+CREATE TRIGGER `TR_employee_delete_dependants` BEFORE DELETE ON `employee` FOR EACH ROW BEGIN
+DELETE FROM dependant l WHERE l.emp_id = old.emp_id;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `TR_employee_delete_emer_contacts` BEFORE DELETE ON `employee` FOR EACH ROW BEGIN
+DELETE FROM emergency_contact l WHERE l.emp_id = old.emp_id;
+END
+$$
+DELIMITER ;
+DELIMITER $$
 CREATE TRIGGER `TR_employee_delete_emp_detail` BEFORE DELETE ON `employee` FOR EACH ROW BEGIN
 DELETE FROM emp_detail l WHERE l.emp_id = old.emp_id;
 END
@@ -312,18 +333,18 @@ CREATE TABLE `emp_detail` (
   `nationality` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `blood_group` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `religion` varchar(255) DEFAULT NULL,
-  `date_joined` date DEFAULT NULL
+  `home_town` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `emp_detail`
 --
 
-INSERT INTO `emp_detail` (`emp_id`, `nationality`, `blood_group`, `religion`, `date_joined`) VALUES
-('00001', 'Sri Lankan', 'A+', 'Christian', NULL),
-('00002', 'Sri Lankan', 'O+', 'Muslim', NULL),
-('00003', 'Sri Lankan', 'AB+', 'Buddhist', NULL),
-('00004', 'Indian', 'B-', 'Hindu', NULL);
+INSERT INTO `emp_detail` (`emp_id`, `nationality`, `blood_group`, `religion`, `home_town`) VALUES
+('00001', 'Sri Lankan', 'A+', 'Christian', 'Colombo'),
+('00002', 'Sri Lankan', 'O+', 'Muslim', 'Kandy'),
+('00003', 'Sri Lankan', 'AB+', 'Buddhist', 'Galle'),
+('00004', 'Indian', 'B-', 'Hindu', 'Chennai');
 
 -- --------------------------------------------------------
 
@@ -405,6 +426,30 @@ INSERT INTO `leave_balance` (`emp_id`, `year`, `annual`, `casual`, `maternity`, 
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `leave_balance_info`
+-- (See below for the actual view)
+--
+CREATE TABLE `leave_balance_info` (
+`alloc_annual` int
+,`alloc_casual` int
+,`alloc_maternity` int
+,`alloc_no_pay` int
+,`annual` int
+,`casual` int
+,`dept_name` varchar(50)
+,`emp_id` varchar(5)
+,`first_name` varchar(50)
+,`full_name` varchar(255)
+,`job_title` varchar(100)
+,`last_name` varchar(50)
+,`maternity` int
+,`no_pay` int
+,`year` year
+);
+
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `leave_info`
 -- (See below for the actual view)
 --
@@ -467,7 +512,7 @@ INSERT INTO `paygrade` (`paygrade_id`, `level`, `annual`, `casual`, `maternity`,
 (1, 'Level 1', 14, 12, 10, 50),
 (2, 'Level 2', 14, 12, 10, 50),
 (3, 'Level 3', 14, 12, 10, 50),
-(4, 'Level 4', 13, 14, 11, 51);
+(4, 'Level 4', 14, 12, 10, 50);
 
 -- --------------------------------------------------------
 
@@ -511,7 +556,11 @@ INSERT INTO `title` (`title_id`, `job_title`) VALUES
 (4, 'ICT Manager'),
 (5, 'Software Engineer'),
 (6, 'Human Resources Manager'),
-(7, 'Network Engineer');
+(7, 'Network Engineer'),
+(8, 'Accountant'),
+(9, 'QA Engineer'),
+(10, 'Software Architect'),
+(11, 'Intern Software Engineer');
 
 -- --------------------------------------------------------
 
@@ -535,8 +584,7 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`user_id`, `emp_id`, `role`, `username`, `password`, `is_active`) VALUES
 (1, '00001', 'admin', 'admin', '$2b$10$FFSpnz/YpIY8VbVEjGkk1.UpbmJuUIdmJDgxmaksLogoJvKGBHg.W', 1),
 (2, '00004', 'user', 'user', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1),
-(3, '00003', 'manager', 'manager', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1),
-(39, '00001', 'user', 'test1', '$2b$10$hEp5rgHFRSwMKQzT3FR0rOGHZdttQtzq5.t7QYpH4h/88V/y001Tm', 1);
+(3, '00003', 'manager', 'manager', '$2b$10$WwRFhuiZW7WmmaSe.K13Wu5YZe/UmFLYh5YZkPWm4Tdihj.Ufmk0C', 1);
 
 -- --------------------------------------------------------
 
@@ -545,7 +593,8 @@ INSERT INTO `user` (`user_id`, `emp_id`, `role`, `username`, `password`, `is_act
 --
 
 CREATE TABLE `user_access` (
-  `role` varchar(50) NOT NULL,
+  `id` int NOT NULL,
+  `role` enum('admin','user','manager','') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `access_level` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -553,10 +602,25 @@ CREATE TABLE `user_access` (
 -- Dumping data for table `user_access`
 --
 
-INSERT INTO `user_access` (`role`, `access_level`) VALUES
-('admin', NULL),
-('manager', NULL),
-('user', NULL);
+INSERT INTO `user_access` (`id`, `role`, `access_level`) VALUES
+(1, 'admin', 'users-view'),
+(2, 'admin', 'users-add'),
+(3, 'admin', 'users-edit'),
+(4, 'admin', 'users-delete'),
+(5, 'admin', 'employees-view'),
+(6, 'admin', 'employees-add'),
+(7, 'admin', 'employees-edit'),
+(8, 'admin', 'employees-delete'),
+(9, 'admin', 'org-info-manage'),
+(10, 'admin', 'branches-manage'),
+(11, 'admin', 'departments-manage'),
+(12, 'admin', 'custom-attributes-manage'),
+(13, 'admin', 'leave-config-manage'),
+(14, 'admin', 'reports'),
+(15, 'manager', 'employees-view'),
+(16, 'manager', 'employees-add'),
+(17, 'manager', 'employees-edit'),
+(18, 'manager', 'reports');
 
 -- --------------------------------------------------------
 
@@ -566,6 +630,15 @@ INSERT INTO `user_access` (`role`, `access_level`) VALUES
 DROP TABLE IF EXISTS `employee_info`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `employee_info`  AS SELECT `employee`.`emp_id` AS `emp_id`, `employee`.`full_name` AS `full_name`, `employee`.`first_name` AS `first_name`, `employee`.`last_name` AS `last_name`, `department`.`dept_name` AS `dept_name`, `title`.`job_title` AS `job_title`, `status`.`type` AS `status_type`, `contract`.`type` AS `contract_type`, `paygrade`.`level` AS `paygrade_level` FROM (((((`employee` left join `department` on((`department`.`dept_id` = `employee`.`dept_id`))) left join `title` on((`employee`.`title_id` = `title`.`title_id`))) left join `status` on((`employee`.`status_id` = `status`.`status_id`))) left join `contract` on((`employee`.`contract_id` = `contract`.`contract_id`))) left join `paygrade` on((`employee`.`paygrade_id` = `paygrade`.`paygrade_id`))) WHERE (`department`.`dept_name` is not null)  ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `leave_balance_info`
+--
+DROP TABLE IF EXISTS `leave_balance_info`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `leave_balance_info`  AS SELECT `employee`.`emp_id` AS `emp_id`, `employee`.`full_name` AS `full_name`, `employee`.`first_name` AS `first_name`, `employee`.`last_name` AS `last_name`, `department`.`dept_name` AS `dept_name`, `title`.`job_title` AS `job_title`, `leave_balance`.`year` AS `year`, `leave_balance`.`annual` AS `annual`, `paygrade`.`annual` AS `alloc_annual`, `leave_balance`.`casual` AS `casual`, `paygrade`.`casual` AS `alloc_casual`, `leave_balance`.`maternity` AS `maternity`, `paygrade`.`maternity` AS `alloc_maternity`, `leave_balance`.`no_pay` AS `no_pay`, `paygrade`.`no_pay` AS `alloc_no_pay` FROM ((((`leave_balance` join `employee` on((`employee`.`emp_id` = `leave_balance`.`emp_id`))) join `department` on((`employee`.`dept_id` = `department`.`dept_id`))) join `title` on((`employee`.`title_id` = `title`.`title_id`))) join `paygrade` on((`employee`.`paygrade_id` = `paygrade`.`paygrade_id`)))  ;
 
 -- --------------------------------------------------------
 
@@ -692,7 +765,7 @@ ALTER TABLE `user`
 -- Indexes for table `user_access`
 --
 ALTER TABLE `user_access`
-  ADD PRIMARY KEY (`role`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -726,13 +799,13 @@ ALTER TABLE `department`
 -- AUTO_INCREMENT for table `dependant`
 --
 ALTER TABLE `dependant`
-  MODIFY `dep_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `dep_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `emergency_contact`
 --
 ALTER TABLE `emergency_contact`
-  MODIFY `emergency_contact_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `emergency_contact_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `leave_application`
@@ -762,13 +835,19 @@ ALTER TABLE `status`
 -- AUTO_INCREMENT for table `title`
 --
 ALTER TABLE `title`
-  MODIFY `title_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `title_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+
+--
+-- AUTO_INCREMENT for table `user_access`
+--
+ALTER TABLE `user_access`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Constraints for dumped tables
@@ -819,8 +898,7 @@ ALTER TABLE `leave_balance`
 -- Constraints for table `user`
 --
 ALTER TABLE `user`
-  ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`),
-  ADD CONSTRAINT `user_ibfk_2` FOREIGN KEY (`role`) REFERENCES `user_access` (`role`);
+  ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
