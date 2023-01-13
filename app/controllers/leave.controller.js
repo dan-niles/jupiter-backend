@@ -1,11 +1,12 @@
 import { format } from "date-fns";
 import LeaveApplication from "../models/leave_application.model.js";
 import LeaveBalance from "../models/leave_balance.model.js";
-import User from "../models/user.model.js";
 
 export default class LeaveCtrl {
+
+
 	static async getAllLeavesByUser(req, res) {
-		const emp_id = req.user.emp_id;
+		const emp_id = req.params.id;
 
 		LeaveApplication.getByEmployeeID(emp_id, (err, result) => {
 			if (err) {
@@ -24,7 +25,7 @@ export default class LeaveCtrl {
 
 	static async getLeavesToReviewBySupervisor(req, res) {
 		// Grabbing the supervisor id from the decoded token.
-		const supervisor_id = req.user.emp_id;
+		const supervisor_id = req.params.id;
 
 		LeaveApplication.getBySupervisorId(supervisor_id, (err, result) => {
 			if (err) {
@@ -41,7 +42,9 @@ export default class LeaveCtrl {
 	}
 
 	static async applyLeave(req, res) {
-		const emp_id = req.user.emp_id;
+
+		const emp_id = req.params.id;
+
 
 		let { startDate, endDate } = req.body;
 
@@ -75,6 +78,7 @@ export default class LeaveCtrl {
 	}
 
 	static async reviewLeave(req, res) {
+
 		const { leave_id, action } = req.body;
 
 		LeaveApplication.takeAction(leave_id, action, (err, result) => {
@@ -89,9 +93,8 @@ export default class LeaveCtrl {
 	}
 
 	static async deleteLeave(req, res) {
-		console.log(req.params);
-		const leave_id = req.params.id;
-		const emp_id = req.user.emp_id;
+
+		const { emp_id, leave_id } = req.params;
 
 		LeaveApplication.delete(leave_id, emp_id, (err, result) => {
 			if (err) {

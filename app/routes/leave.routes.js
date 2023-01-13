@@ -3,16 +3,28 @@ import LeaveCtrl from "../controllers/leave.controller.js";
 
 const router = express.Router();
 
-router.route("/").get(LeaveCtrl.getAllLeavesByUser).post(LeaveCtrl.applyLeave);
+router.route("/balance")
+	.post(LeaveCtrl.getLeaveBalance);
+router.route("/total")
+	.post(LeaveCtrl.getAllocatedLeaves);
+router.route("/supervisor")
+	.post(LeaveCtrl.reviewLeave)
 
-router.route("/:id").delete(LeaveCtrl.deleteLeave);
+
+router.route("/")
+	.get(LeaveCtrl.getAllLeavesByUser)
+
+router.route("/:id")
+	.get(LeaveCtrl.getAllLeavesByUser)
+	.post(LeaveCtrl.applyLeave)
+
+router.route("/:emp_id/:leave_id")
+	.delete(LeaveCtrl.deleteLeave);
+
 
 router
-	.route("/supervisor")
+	.route("/supervisor/:id")
 	.get(LeaveCtrl.getLeavesToReviewBySupervisor)
-	.post(LeaveCtrl.reviewLeave);
 
-router.route("/balance").post(LeaveCtrl.getLeaveBalance);
-router.route("/total").post(LeaveCtrl.getAllocatedLeaves);
 
 export default router;
