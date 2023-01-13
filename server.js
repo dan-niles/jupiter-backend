@@ -38,7 +38,7 @@ app.get("/", (req, res) => {
 app.use("/api/login", loginRoutes);
 
 // Using authentication for the below
-app.use(validateToken);
+// app.use(validateToken);
 
 // Initializaing routes
 app.use("/api/user", userRoutes);
