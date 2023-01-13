@@ -188,6 +188,19 @@ export default class EmployeeCtrl {
 		});
 	}
 
+	// Get count of all employees
+	static async getCount(req, res) {
+		Employee.getCount((err, result) => {
+			if (err) {
+				return res.status(500).send({
+					error: "Something went wrong on our side.",
+				});
+			}
+
+			return res.send(result);
+		});
+	}
+
 	static async deleteOne(req, res) {
 		const emp_id = req.params.id;
 

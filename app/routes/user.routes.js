@@ -13,4 +13,6 @@ router
 
 router.route("/change-password/:user_id").put(user.changePassword);
 
+router.route("/count").post(user.getCount);
+
 export default router;

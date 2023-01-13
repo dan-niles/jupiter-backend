@@ -60,6 +60,17 @@ export const findAll = (req, res) => {
 	});
 };
 
+// Get count of all users
+export const getCount = (req, res) => {
+	User.getCount((err, data) => {
+		if (err)
+			res.status(500).send({
+				message: err.message || "Some error occurred",
+			});
+		return res.send(data);
+	});
+};
+
 // Update a user identified by the user_id in the request
 export const update = (req, res) => {
 	// Validate Request

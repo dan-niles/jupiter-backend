@@ -55,4 +55,9 @@ export default class Branch {
 			result
 		);
 	}
+
+	// Get branch count
+	static async getCount(result) {
+		connection.query("CALL PR_no_of_records (?);", "branch", result);
+	}
 }

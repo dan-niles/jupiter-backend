@@ -11,4 +11,6 @@ router
 	.put(department.update)
 	.delete(department.remove);
 
+router.route("/count").post(department.getCount);
+
 export default router;

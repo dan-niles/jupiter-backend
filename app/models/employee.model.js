@@ -147,4 +147,9 @@ export default class Employee {
 	static remove(emp_id, result) {
 		connection.query(`DELETE FROM employee WHERE emp_id = ?`, [emp_id], result);
 	}
+
+	// Get employee count
+	static async getCount(result) {
+		connection.query("CALL PR_no_of_records (?);", "employee", result);
+	}
 }

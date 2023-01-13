@@ -209,6 +209,11 @@ class User {
 			}
 		);
 	}
+
+	// Get user count
+	static async getCount(result) {
+		connection.query("CALL PR_no_of_records (?);", "user", result);
+	}
 }
 
 export default User;

@@ -13,4 +13,6 @@ router
 
 router.route("/department/:dept_id").get(EmployeeCtrl.getByDepartment);
 
+router.route("/count").post(EmployeeCtrl.getCount);
+
 export default router;

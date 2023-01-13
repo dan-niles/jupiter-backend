@@ -11,4 +11,6 @@ router
 	.put(branch.update)
 	.delete(branch.remove);
 
+router.route("/count").post(branch.getCount);
+
 export default router;
