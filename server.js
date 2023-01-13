@@ -19,6 +19,7 @@ import statusRoutes from "./app/routes/status.routes.js";
 import reportRoutes from "./app/routes/reports.routes.js";
 import emergencyContactRoutes from "./app/routes/emergency_contact.routes.js";
 import DependantRoutes from "./app/routes/dependant.routes.js";
+import UserAccessRoutes from "./app/routes/user_access.routes.js";
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use("/api/status", statusRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/emergency-contact", emergencyContactRoutes);
 app.use("/api/dependant", DependantRoutes);
+app.use("/api/user-access", UserAccessRoutes);
 
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}.`);

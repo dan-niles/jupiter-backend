@@ -1,89 +1,49 @@
-import connection from "../config/db";
+import connection from "../config/db.js";
 
-class Useraccess {
-    constructer(role, access_level){
-        this.role = role;
-        this.access_level = access_level;
-    }
+class UserAccess {
+	constructer(role, access_level) {
+		this.role = role;
+		this.access_level = access_level;
+	}
 
-    create(result){
-        connection.query(
-            `INSERT INTO user_access(role, access_level)
-            VALUES (?, ?)`,
-            [this.role, this.access_level],
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null);
-                }
+	static getAll(result) {
+		connection.query(`SELECT * FROM user_access`, (err, res) => {
+			if (err) {
+				console.log("error: ", err);
+				return result(err, null);
+			}
 
-                this.role = res.insertId;
-                result(null, {...this});
-            }
+			return result(null, res);
+		});
+	}
 
-        )
-    }
+	static getByRole(role, result) {
+		connection.query(
+			`SELECT * FROM user_access WHERE role = ?`,
+			[role],
+			(err, res) => {
+				if (err) {
+					console.log("error: ", err);
+					return result(err, null);
+				}
+				return result(null, res);
+			}
+		);
+	}
 
-    static getAll(result){
-        connection.query(
-            `SELECT * FROM user_access`,
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null);
-                }
-
-                return result(null, res)
-            }
-        )
-    }
-
-    static getById(role, result){
-        connection.query(
-            `SELECT * FROM user_access WHERE role = ${role}`,
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null)
-                }
-                return result(null, res)
-            }
-        )   
-    }
-
-    updateById(result){
-        connection.query(
-            `UPDATE user_access SET 
-            access_level = ?
-            WHERE role = ?`,
-            [
-                this.access_level,
-                this.role
-            ],
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null);
-                }
-                return result(null, res)
-            }
-        )
-        
-    }
-
-    static deleteById(role, result){
-        connection.query(
-            `DELETE FROM user_access WHERE role = ${role}`,
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    return result(err, null);
-                }
-
-                return result(null, res)
-            }
-        )
-    } 
+	static getByAccessLevel(role, access_level, result) {
+		connection.query(
+			`SELECT * FROM user_access WHERE role = ? AND access_level = ?`,
+			[role, access_level],
+			(err, res) => {
+				if (err) {
+					console.log("error: ", err);
+					return result(err, null);
+				}
+				return result(null, res);
+			}
+		);
+	}
 }
 
-export default Useraccess;
+export default UserAccess;
