@@ -1,9 +1,7 @@
+import connection from "../config/db.js";
 
-import connection from "../config/db.js"
-
-
-class Employee {
-	constructor(
+export default class Employee {
+	constructor({
 		emp_id,
 		full_name,
 		first_name,
@@ -17,50 +15,48 @@ class Employee {
 		contract_id,
 		title_id,
 		supervisor_id,
-		paygrade_id
-	) {
-		this.emp_id = emp_id
-		this.full_name = full_name
-		this.first_name = first_name
-		this.last_name = last_name
-		this.birthdate = birthdate
-		this.marital_status = marital_status
-		this.dept_id = dept_id
-		this.email = email
-		this.nic = nic
-		this.status_id = status_id
-		this.contract_id = contract_id
-		this.title_id = title_id
-		this.supervisor_id = supervisor_id
-		this.paygrade_id = paygrade_id
+		paygrade_id,
+	}) {
+		this.emp_id = emp_id;
+		this.full_name = full_name;
+		this.first_name = first_name;
+		this.last_name = last_name;
+		this.birthdate = birthdate;
+		this.marital_status = marital_status;
+		this.dept_id = dept_id;
+		this.email = email;
+		this.nic = nic;
+		this.status_id = status_id;
+		this.contract_id = contract_id;
+		this.title_id = title_id;
+		this.supervisor_id = supervisor_id;
+		this.paygrade_id = paygrade_id;
 	}
 
 	static getAll(result) {
 		connection.query(
-			`SELECT * FROM employee`,
-			(err, res) => {
-				if (err) {
-					result(null, res)
-					return
-				}
-
-				result(null, res)
-			}
-		)
+			`SELECT * FROM employee 
+			INNER JOIN department ON department.dept_id=employee.dept_id
+			INNER JOIN title ON title.title_id=employee.title_id
+			`,
+			result
+		);
 	}
 
 	static getById(emp_id, result) {
 		connection.query(
-			`SELECT * FROM employee WHERE emp_id = ?`,
+			`SELECT * FROM employee INNER JOIN emp_detail ON emp_detail.emp_id=employee.emp_id WHERE employee.emp_id = ?`,
 			[emp_id],
-			(err, res) => {
-				if (err) {
-					return result(null, res)
-				}
+			result
+		);
+	}
 
-				result(null, res)
-			}
-		)
+	static getByDepartmentID(dept_id, result) {
+		connection.query(
+			`SELECT * FROM employee WHERE dept_id = ?`,
+			[dept_id],
+			result
+		);
 	}
 
 	create(result) {
@@ -97,16 +93,10 @@ class Employee {
 				this.contract_id,
 				this.title_id,
 				this.supervisor_id,
-				this.paygrade_id
+				this.paygrade_id,
 			],
-			(err, res) => {
-				if (err) {
-					return result(null, err)
-				}
-
-				result(null, res)
-			}
-		)
+			result
+		);
 	}
 
 	edit(result) {
@@ -124,10 +114,8 @@ class Employee {
 				contract_id = ?,
 				title_id = ?,
 				supervisor_id = ?,
-				paygrade_id = ?,
-			WHERE
-				emp_id = ?
-			`,
+				paygrade_id = ? 
+			WHERE emp_id = ?`,
 			[
 				this.full_name,
 				this.first_name,
@@ -142,34 +130,13 @@ class Employee {
 				this.title_id,
 				this.supervisor_id,
 				this.paygrade_id,
-				this.emp_id
+				this.emp_id,
 			],
-			(err, res) => {
-				if (err) {
-					return result(err, null)
-				}
-				return result(null, res)
-			}
-		)
+			result
+		);
 	}
 
 	static remove(emp_id, result) {
-		connection.query(
-			`DELETE FROM employee WHERE emp_id = ?`,
-			[emp_id],
-			(err, res) => {
-				if (err) {
-					return result(null, err)
-				}
-
-				if (res.affectedRows === 0) {
-					return result({ error: `user with id ${emp_id} not found.` })
-				}
-
-				result(null, res)
-			}
-		)
+		connection.query(`DELETE FROM employee WHERE emp_id = ?`, [emp_id], result);
 	}
 }
-
-export default Employee

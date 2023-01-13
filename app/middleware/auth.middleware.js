@@ -16,10 +16,15 @@ dotenv.config()
 
 const validateToken = (req, res, next) => {
 
-	const token = req.get("authorization")?.slice("Bearer ".length)
+	const token = req.headers["access-token"] ||
+		req.headers["authorization"]?.slice("Bearer ".length)
 
 	if (!token) {
-		return res.status(403).send("A token is required for authentication")
+		return res.status(403).send(
+			{
+				error: "Auth token is not provided.!"
+			}
+		);
 	}
 
 	try {
@@ -42,6 +47,8 @@ const validateToken = (req, res, next) => {
 		console.log(err);
 		return res.status(401).send("Invalid Token")
 	}
-}
+
+	return next();
+};
 
 export default validateToken
