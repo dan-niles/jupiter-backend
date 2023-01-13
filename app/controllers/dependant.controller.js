@@ -1,4 +1,4 @@
-import Dependant from "../models/dependant.model";
+import Dependant from "../models/dependant.model.js";
 
 // insert new dependant into the database
 export const create = (req, res) => {
@@ -48,6 +48,20 @@ export const findAll = (req, res) => {
 			res.status(500).send({
 				message:
 					err.message || "Some error occurred while retrieving dependants",
+			});
+		else res.send(data);
+	});
+};
+
+// retrieve all dependants from the database for given emp_id
+export const findByEmpID = (req, res) => {
+	const emp_id = req.params.emp_id;
+	Dependant.getByEmp(emp_id, (err, data) => {
+		if (err)
+			res.status(500).send({
+				message:
+					err.message ||
+					"Some error occurred while retrieving emergency contacts",
 			});
 		else res.send(data);
 	});

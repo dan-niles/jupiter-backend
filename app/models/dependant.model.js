@@ -43,7 +43,7 @@ class Dependant {
                 emp_id,
                 dep_name,
                 dep_birthdate,
-                relationship_to_emp,
+                relationship_to_emp
             )
             VALUES
             (?,?,?,?,?)`,

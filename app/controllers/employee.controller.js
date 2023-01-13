@@ -1,4 +1,6 @@
 import Employee from "../models/employee.model.js";
+import Dependant from "../models/dependant.model.js";
+import EmergencyContact from "../models/emergency_contact.model.js";
 
 export default class EmployeeCtrl {
 	static async getAll(req, res) {
@@ -46,7 +48,7 @@ export default class EmployeeCtrl {
 		const emp = new Employee(req.body);
 
 		const { emp_id } = req.body;
-		const { custom_attributes } = req.body;
+		const { custom_attributes, dependants, emergency_contacts } = req.body;
 
 		emp.create((err, result) => {
 			if (err) {
@@ -71,6 +73,38 @@ export default class EmployeeCtrl {
 				Employee.updateEmpDetail(emp_id, column, custom_attributes[column]);
 			}
 
+			for (const key in dependants) {
+				if (
+					dependants[key].name != "" &&
+					dependants[key].birthdate != "" &&
+					dependants[key].relationship != ""
+				) {
+					const dep = new Dependant({
+						emp_id: emp_id,
+						dep_name: dependants[key].name,
+						dep_birthdate: dependants[key].birthdate,
+						relationship_to_emp: dependants[key].relationship,
+					});
+					dep.create();
+				}
+			}
+
+			for (const key in emergency_contacts) {
+				if (
+					emergency_contacts[key].name != "" &&
+					emergency_contacts[key].phone != ""
+				) {
+					const emer_contact = new EmergencyContact({
+						emp_id: emp_id,
+						contact_name: emergency_contacts[key].name,
+						phone_no: emergency_contacts[key].phone,
+						address: emergency_contacts[key].address,
+					});
+
+					emer_contact.create();
+				}
+			}
+
 			res.send(result);
 			return;
 		});
@@ -79,7 +113,7 @@ export default class EmployeeCtrl {
 	static async updateOne(req, res) {
 		const emp = new Employee(req.body);
 		const { emp_id } = req.body;
-		const { custom_attributes } = req.body;
+		const { custom_attributes, dependants, emergency_contacts } = req.body;
 
 		if (emp.supervisor_id === "") {
 			emp.supervisor_id = null;
@@ -106,6 +140,47 @@ export default class EmployeeCtrl {
 
 			for (const column in custom_attributes) {
 				Employee.updateEmpDetail(emp_id, column, custom_attributes[column]);
+			}
+
+			for (const key in dependants) {
+				if (
+					dependants[key].name != "" &&
+					dependants[key].birthdate != "" &&
+					dependants[key].relationship != ""
+				) {
+					const dep = new Dependant({
+						emp_id: emp_id,
+						dep_id: dependants[key].dep_id,
+						dep_name: dependants[key].name,
+						dep_birthdate: dependants[key].birthdate,
+						relationship_to_emp: dependants[key].relationship,
+					});
+					if (dep.dep_id === null) {
+						dep.create();
+					} else {
+						dep.update();
+					}
+				}
+			}
+
+			for (const key in emergency_contacts) {
+				if (
+					emergency_contacts[key].name != "" &&
+					emergency_contacts[key].phone != ""
+				) {
+					const emer_contact = new EmergencyContact({
+						emergency_contact_id: emergency_contacts[key].emergency_contact_id,
+						emp_id: emp_id,
+						contact_name: emergency_contacts[key].name,
+						phone_no: emergency_contacts[key].phone,
+						address: emergency_contacts[key].address,
+					});
+					if (emer_contact.emergency_contact_id === null) {
+						emer_contact.create();
+					} else {
+						emer_contact.update();
+					}
+				}
 			}
 
 			res.send(result);
