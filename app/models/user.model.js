@@ -214,6 +214,15 @@ class User {
 	static async getCount(result) {
 		connection.query("CALL PR_no_of_records (?);", "user", result);
 	}
+
+	// Check if user is a supervisor
+	static async checkIfSupervisor(emp_id, result) {
+		connection.query(
+			"SELECT * FROM supervisor_info WHERE supervisor_id = ?",
+			[emp_id],
+			result
+		);
+	}
 }
 
 export default User;

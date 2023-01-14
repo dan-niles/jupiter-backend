@@ -71,6 +71,17 @@ export const getCount = (req, res) => {
 	});
 };
 
+// Check if supervisor
+export const checkIfSupervisor = (req, res) => {
+	User.checkIfSupervisor(req.params.emp_id, (err, data) => {
+		if (err)
+			res.status(500).send({
+				message: err.message || "Some error occurred",
+			});
+		return res.send(data);
+	});
+};
+
 // Update a user identified by the user_id in the request
 export const update = (req, res) => {
 	// Validate Request

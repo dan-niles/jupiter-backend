@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.route("/").get(user.findAll).post(user.create);
 
+router.route("/supervisor/:emp_id").get(user.checkIfSupervisor);
+
 router
 	.route("/:user_id")
 	.get(user.findOne)
