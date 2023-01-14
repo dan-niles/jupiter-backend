@@ -73,7 +73,8 @@ class Paygrade {
 
 	static deleteById(paygrade_id, result) {
 		connection.query(
-			`DELETE FROM paygrade WHERE paygrade_id = ${paygrade_id}`,
+			`DELETE FROM paygrade WHERE paygrade_id = ?`,
+			[paygrade_id],
 			(err, res) => {
 				if (err) {
 					console.log("error: ", err);
