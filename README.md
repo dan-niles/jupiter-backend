@@ -14,6 +14,12 @@ Read more [here](project-description.pdf).
 
 The application uses MySQL for the database. The frontend is built using React and the backend is made using Node.js and Express.
 
+## Database Design
+
+The ER diagram of the database is shown below.
+
+![ER Diagram](assets/ER_diagram.png?raw=true)
+
 ## Application Development Process
 
 ### Setting Up
@@ -49,14 +55,15 @@ mysql> SOURCE hrm_schema.sql
    ```
    PORT=port_number
    ```
-   
+
    4. JWT secret key for authentication
-   
+
    ```
    JWT_SECRET_KEY=jwt_secret_key
    ```
-   
+
    5. URL of frontend
+
    ```
    FRONTEND_URL=frontend_url
    ```
