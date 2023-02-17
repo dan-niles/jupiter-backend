@@ -20,7 +20,7 @@ The ER diagram of the database is shown below.
 
 ![ER Diagram](assets/ER_diagram.png?raw=true)
 
-## Application Development Process
+## Getting Started
 
 ### Setting Up
 
