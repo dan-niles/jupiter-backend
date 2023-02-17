@@ -1,8 +1,10 @@
-# Jupiter HRM
+# Jupiter HRM - Backend
 
 ## Background
 
 This application was developed for the group project of CS3043: Database Systems.
+
+Frontend of the application can be found [here](https://github.com/dan-niles/jupiter-frontend)
 
 ### Problem Statement
 
